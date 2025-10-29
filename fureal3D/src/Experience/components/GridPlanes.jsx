@@ -25,7 +25,7 @@ const Plane = ({ row, column, position, planeDepth, planeWidth,
 
 
   const meshRef = useRef();
-  const {setPointer, setPointerIdPosition} = usePointer();
+  const {pointer, setPointer, positionPointer, isMoving, setIsMoving } = usePointer();
   const [hovered, setHovered] = useState(false);
   const [opacity, setOpacity] = useState(0);
   const { isDarkRoom, isTransitioning } = useToggleRoomStore();
@@ -89,7 +89,7 @@ const Plane = ({ row, column, position, planeDepth, planeWidth,
     meshRef.current.emissiveIntensity = hovered ? 1.5 : 0.8;
 
 
-    const bbox = new THREE.Box3().setFromObject(meshRef.current);
+    // const bbox = new THREE.Box3().setFromObject(meshRef.current);
     // console.log("Point Box Min:", bbox.min);
     // console.log("Point Box Max:", bbox.max);
   });
@@ -111,15 +111,19 @@ const Plane = ({ row, column, position, planeDepth, planeWidth,
         setHovered(false);
       }}
       onClick={() => {
-        // console.log("OnClick", currentLibNodeSelection, currentSelection);
+        
         if(!currentLibNodeSelection)
         {
           if(currentSelection)
           {
-            setPointerIdPosition(currentSelection, position);
-            
+            setMessage(`ClickIt: ${currentLibNodeSelection} ${currentSelection} ${pointer}`);
+            positionPointer(currentSelection, position);
+            // setIsMoving(false);
+            // setPointer(null);
+            // setCurrentSelection(null);
+            // setCurrentLibNodeSelection(null);
           }
-        }else{
+        } else {
 
           setAddedHighlights((current) => {
             const index = current.findIndex(
@@ -149,8 +153,10 @@ const Plane = ({ row, column, position, planeDepth, planeWidth,
           
         }
 
+        setPointer(null);
         setCurrentSelection(null);
         setCurrentLibNodeSelection(null);
+        
       }}
 
 

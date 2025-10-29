@@ -26,6 +26,7 @@ export function useSelection() {
 const PointerContext = createContext();
 
 export function PointerProvider({ children }) {
+  const [isMoving, setIsMoving] = useState(false);
   const [pointer, setPointer] = useState(null);
   const [rotationIndex, setRotationIndex] = useState(0);
   const [directionAxis, setDirectionAxis] = useState(0);
@@ -57,6 +58,11 @@ export function PointerProvider({ children }) {
       |✔️${rules[personAge].valid}|❌${rules[personAge].invalid}`);
   }
 
+  const deletePointerId = (id) => {
+    const newHighlights = addedHighlights.filter(item => item.id !== id);
+    setAddedHighlights(newHighlights);
+  }
+
 
   function getDirectionIndex(angle) {
     const adjustedAngle = (angle + 360) % 360; // chuẩn hóa 0-360
@@ -73,9 +79,10 @@ export function PointerProvider({ children }) {
 
 
 
-  const setPointerIdPosition = (id, pos) => {
+  const positionPointer = (id, pos) => {
     setAddedHighlights((current) => {
       const i = current.findIndex(item => item.id === id);
+      console.log('Index', i);
       if (i === -1) return current;
 
       const newHighlights = [...current];
@@ -158,7 +165,9 @@ export function PointerProvider({ children }) {
     <PointerContext.Provider value={{ pointer, setPointer, personAge, setPersonAge,
         directionAxis, setDirectionAxis, getResult,
         addedHighlights, setAddedHighlights, 
-        rotateLeft, rotateRight, setPointerIdPosition, setPointerIdRotationIndex }}>
+        deletePointerId,isMoving, setIsMoving,
+        rotateLeft, rotateRight, 
+        positionPointer, setPointerIdRotationIndex }}>
       {children}
     </PointerContext.Provider>
   );

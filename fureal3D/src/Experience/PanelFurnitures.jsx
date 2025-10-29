@@ -62,26 +62,24 @@ export const PointerHighlight = React.forwardRef(({id, pointer, modelFile, rotat
   const meshRef = ref || React.useRef();
   const [isHovered, setIsHovered] = React.useState(false);
   const {currentSelection, setCurrentSelection} = useSelection();
-  const { setPointer } = usePointer();
-  const [isMoving, setIsMoving] = useState(false);
+  const { setPointer, isMoving, setIsMoving } = usePointer();
+  // const [isMoving, setIsMoving] = useState(false);
   const {addedHighlights, setAddedHighlights} = usePointer();
   const model = modelFile ? useGLTF(modelFile) : null;
   const decalTexture = useTexture('/models/Light Room/shadow-circle.png');
 
   const onClickHighlight = () => {
-    setIsMoving(prev => !prev);
+    setIsMoving(prev => {
+      if (prev) {
+        // Khi chuyển từ true -> false, dừng di chuyển, reset pointer
+        setPointer(null);
+        return false;
+      }
+      // Khi chuyển từ false -> true, bật di chuyển
+      return true;
+    });
   };
 
-  function updateHighlightPosition(index, newPosition) {
-    setAddedHighlights((current) => {
-      const newHighlights = [...current];
-      newHighlights[index] = {
-        ...newHighlights[index],
-        position: newPosition,
-      };
-      return newHighlights;
-    });
-  }
 
   useEffect(() => {
     const handleContextMenu = (event) => {
@@ -127,7 +125,11 @@ export const PointerHighlight = React.forwardRef(({id, pointer, modelFile, rotat
       if(!isMoving) {
         meshRef.current.position.set(pointer[0], pointer[1] + 0.05, pointer[2]);
       } else {
-        updateHighlightPosition
+        
+        // const index = addedHighlights.findIndex(item => item.id === id);
+        // if(index !== -1) {
+        //   updateHighlightPosition(index, meshRef.current.position);
+        // }
       }
     }
   });

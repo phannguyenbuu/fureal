@@ -231,7 +231,7 @@ const imgStyle = { width: 30, height: 30 };
 
 function ModifyControls({setCapture}) {
   
-  const { rotateLeft, rotateRight,getResult } = usePointer();
+  const { rotateLeft, rotateRight,getResult, deletePointerId } = usePointer();
   const {setCurrentLibNodeSelection, currentSelection, message,setMessage } = useSelection();
 //   useEffect(() => {
 //   console.log("Rotation or Pointer changed", pointer, rotationIndex);
@@ -256,6 +256,10 @@ function ModifyControls({setCapture}) {
     setCurrentLibNodeSelection(null);
   }
 
+  const handleDelete = () => {
+    deletePointerId(currentSelection);
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'row', gap: 10 }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -266,17 +270,17 @@ function ModifyControls({setCapture}) {
           </p>)}
         </div>
       </div>
-      <button style={btnStyle} onClick={handleSelectMode}>
+      <button style={btnStyle} onClick={() => handleSelectMode()}>
         <img src="/images/select.png" style={imgStyle} alt="Rotation" />
         Chọn
       </button>
 
-      <button style={btnStyle} onClick={rotateCW}>
+      <button style={btnStyle} onClick={() => rotateCW()}>
         <img src="/images/rotation-icon-left.png" style={imgStyle} alt="Rotation" />
         Xoay 90
       </button>
 
-      <button style={btnStyle} onClick={rotateCCW}>
+      <button style={btnStyle} onClick={() => rotateCCW()}>
         <img src="/images/rotation-icon.png" style={imgStyle} alt="Rotation-Left" />
         Xoay 90
       </button>
@@ -286,6 +290,10 @@ function ModifyControls({setCapture}) {
         Lưu
       </button>
 
+      <button style={btnStyle} onClick={() => handleDelete()}>
+        <img src="/images/delete.png" style={imgStyle} alt="Save"/><br/>
+        Xóa
+      </button>
 
       <SimpleSlider/>
     </div>
