@@ -5,7 +5,7 @@ import DarkRoomFirst from "./models/dark/Dark_First";
 import DarkRoomSecond from "./models/dark/Dark_Second";
 import DarkRoomThird from "./models/dark/Dark_Third";
 import DarkRoomFourth from "./models/dark/Dark_Fourth";
-import LightRoomFirst from "./models/light/DirectionArrow";
+import LightRoomFirst from "./models/light/Light_First";
 import LightRoomSecond from "./models/light/Light_Second";
 import LightRoomThird from "./models/light/Light_Third";
 import LightRoomFourth from "./models/light/Light_Fourth";
@@ -24,7 +24,7 @@ const Scene = ({ pointerRef }) => {
   const lightGroupRef = useRef();
   const gridPlanesRef = useRef();
   const darkRoomGroupPosition = new THREE.Vector3(0, 0, 0);
-  const lightRoomGroupPosition = new THREE.Vector3(24.79, 0, 0.173);
+  const lightRoomGroupPosition = new THREE.Vector3(24, 0, 3.5);
   const groupRotationRef = useRef(0);
   const { isDarkRoom } = useToggleRoomStore();
   const { directionAxis} = usePointer();
@@ -75,20 +75,22 @@ const Scene = ({ pointerRef }) => {
           
 
 
-          {/* <LightRoomFirst
+          <LightRoomFirst
             position={[
-              -lightRoomGroupPosition.x,
-              -lightRoomGroupPosition.y,
-              -lightRoomGroupPosition.z,
+              26,
+              0,
+              -3.5,
             ]}
+            scale={[-1,1,1]}
           />
           <LightRoomSecond
             position={[
-              -lightRoomGroupPosition.x,
-              -lightRoomGroupPosition.y,
-              -lightRoomGroupPosition.z,
+              26,
+              0,
+              -3.5,
             ]}
-          /> */}
+            scale={[-1,1,1]}
+          />
           <LightRoomThird
             position={[
               -lightRoomGroupPosition.x,
@@ -96,20 +98,14 @@ const Scene = ({ pointerRef }) => {
               -lightRoomGroupPosition.z,
             ]}
           />
-          {/* <LightRoomFourth
+          
+          <LightTargets
             position={[
               -lightRoomGroupPosition.x,
               -lightRoomGroupPosition.y,
               -lightRoomGroupPosition.z,
             ]}
-          /> */}
-          {/* <LightTargets
-            position={[
-              -lightRoomGroupPosition.x,
-              -lightRoomGroupPosition.y,
-              -lightRoomGroupPosition.z,
-            ]}
-          /> */}
+          />
 
           <DirectionArrow position={[2.5,0,-2]} scale={[2.5,1,2.5]} 
             rotation={[0,directionAxis/180 * Math.PI,0]}/>

@@ -1,0 +1,93 @@
+[
+    {
+          "id": "Giường-1761780422982",
+          "position": [
+              2.25,
+              0.001,
+              -0.75
+          ],
+          "modelFile": "/models/Light Room/obj/Bed.glb",
+          "data": {
+              "type": "bed",
+              "file": "/models/Light Room/obj/Bed.glb",
+              "preview": "/models/Light Room/preview/kingbed-001.jpg",
+              "name": "Giường",
+              "zone": [
+                  2,
+                  10,
+                  9,
+                  17
+              ],
+              "color": "bw"
+          },
+          "rotationIndex": 2
+      },
+      {
+          "id": "Tủ đầu giường-1761780474434",
+          "position": [
+              0.25,
+              0,
+              0.25
+          ],
+          "modelFile": "/models/Light Room/obj/Bedtab.glb",
+          "data": {
+              "type": "tab",
+              "file": "/models/Light Room/obj/Bedtab.glb",
+              "preview": "/models/Light Room/preview/bedtab-001.jpg",
+              "name": "Tủ đầu giường",
+              "color": "bw"
+          },
+          "rotationIndex": 1
+      },
+           {
+          "id": "Tủ đầu giường-1761780474435",
+          "position": [
+              4,
+              0,
+              0.25
+          ],
+          "modelFile": "/models/Light Room/obj/Bedtab.glb",
+          "data": {
+              "type": "tab",
+              "file": "/models/Light Room/obj/Bedtab.glb",
+              "preview": "/models/Light Room/preview/bedtab-001.jpg",
+              "name": "Tủ đầu giường",
+              "color": "bw"
+          },
+          "rotationIndex": 1
+      },
+      {
+            "id": "Tủ âm tường 1m2-1761781709187",
+            "position": [
+                4.7,
+                0,
+                -4.5
+            ],
+            "modelFile": "/models/Light Room/obj/Wardrobe1m2.glb",
+            "data": {
+                "type": "wardrobe",
+                "file": "/models/Light Room/obj/Wardrobe1m2.glb",
+                "preview": "/models/Light Room/preview/wardrobe1m2.jpg",
+                "name": "Tủ âm tường 1m2",
+                "color": "bw"
+            },
+            "rotationIndex": 1
+        },
+        {
+            "id": "Băng ngồi-1761781942680",
+            "position": [
+                -0.75,
+                0.001,
+                -2.25
+            ],
+            "modelFile": "/models/Light Room/obj/Bench.glb",
+            "data": {
+                "type": "bench",
+                "file": "/models/Light Room/obj/Bench.glb",
+                "preview": "/models/Light Room/preview/bench.jpg",
+                "name": "Băng ngồi",
+                "color": "bw"
+            },
+            "rotationIndex": 0
+        }
+  ]

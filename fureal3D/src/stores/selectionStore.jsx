@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import rules from "../Experience/rules.json";
+import def_funitures from "./default.json";
 const SelectionContext = createContext();
 
 export function SelectionProvider({ children }) {
@@ -31,7 +32,11 @@ export function PointerProvider({ children }) {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [directionAxis, setDirectionAxis] = useState(0);
   const [personAge, setPersonAge] = useState("Kim");
-  const [addedHighlights, setAddedHighlights] = useState([]);
+  const [addedHighlights, setAddedHighlights] = useState(def_funitures);
+
+  useEffect(()=>{
+    console.log(addedHighlights);
+  },[addedHighlights]);
 
   const getResult = () => {
     const i = addedHighlights.findIndex(item => item.data.type === "bed");
