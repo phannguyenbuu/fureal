@@ -16,14 +16,14 @@ export default function OurCEOSection() {
 
             {/* Ảnh CEO - 5 cột cố định */}
             <div className="grid grid-cols-5 gap-6">
-                {ceoImages.map((src, index) => (
+                {/* {ceoImages.map((src, index) => (
                     <img
                         key={index}
                         src={src}
                         alt={`CEO ${index + 1}`}
                         className="w-[180px] h-[240px] object-cover rounded-xl shadow-md transition duration-300 hover:-translate-y-1"
                     />
-                ))}
+                ))} */}
             </div>
         </section>
     );
