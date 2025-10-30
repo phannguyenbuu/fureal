@@ -27,7 +27,7 @@ export function useSelection() {
 const PointerContext = createContext();
 
 export function PointerProvider({ children }) {
-  const [isMoving, setIsMoving] = useState(false);
+  // const [isMoving, setIsMoving] = useState(false);
   const [pointer, setPointer] = useState(null);
   const [rotationIndex, setRotationIndex] = useState(0);
   const [directionAxis, setDirectionAxis] = useState(0);
@@ -170,7 +170,7 @@ export function PointerProvider({ children }) {
     <PointerContext.Provider value={{ pointer, setPointer, personAge, setPersonAge,
         directionAxis, setDirectionAxis, getResult,
         addedHighlights, setAddedHighlights, 
-        deletePointerId,isMoving, setIsMoving,
+        deletePointerId,
         rotateLeft, rotateRight, 
         positionPointer, setPointerIdRotationIndex }}>
       {children}

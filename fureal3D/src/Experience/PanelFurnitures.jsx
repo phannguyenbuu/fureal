@@ -62,8 +62,8 @@ export const PointerHighlight = React.forwardRef(({id, pointer, modelFile, rotat
   const meshRef = ref || React.useRef();
   const [isHovered, setIsHovered] = React.useState(false);
   const {currentSelection, setCurrentSelection} = useSelection();
-  const { setPointer, isMoving, setIsMoving } = usePointer();
-  // const [isMoving, setIsMoving] = useState(false);
+  const { setPointer } = usePointer();
+  const [isMoving, setIsMoving] = useState(false);
   const {addedHighlights, setAddedHighlights} = usePointer();
   const model = modelFile ? useGLTF(modelFile) : null;
   const decalTexture = useTexture('/models/Light Room/shadow-circle.png');
@@ -71,14 +71,13 @@ export const PointerHighlight = React.forwardRef(({id, pointer, modelFile, rotat
   const onClickHighlight = () => {
     setIsMoving(prev => {
       if (prev) {
-        // Khi chuyển từ true -> false, dừng di chuyển, reset pointer
-        setPointer(null);
+        setPointer(null); // reset pointer khi dừng
         return false;
       }
-      // Khi chuyển từ false -> true, bật di chuyển
       return true;
     });
   };
+
 
 
   useEffect(() => {
@@ -103,9 +102,9 @@ export const PointerHighlight = React.forwardRef(({id, pointer, modelFile, rotat
     }
   }, [model]);
 
-  useFrame(({ mouse, raycaster, camera }) => {
+  useFrame(({ pointer, raycaster, camera }) => {
     if (isMoving && meshRef.current) {
-      raycaster.setFromCamera(mouse, camera);
+      raycaster.setFromCamera(pointer, camera);
       const planeZ = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
       const intersectPoint = new THREE.Vector3();
       raycaster.ray.intersectPlane(planeZ, intersectPoint);
@@ -113,23 +112,15 @@ export const PointerHighlight = React.forwardRef(({id, pointer, modelFile, rotat
       meshRef.current.position.x = intersectPoint.x;
       meshRef.current.position.z = intersectPoint.z;
 
-      setPointer(null);
       setCurrentSelection(id);
     }
   });
 
-  // Cập nhật vị trí khi pointer thay đổi ngoài frame move
+  // Cập nhật khi pointer thay đổi ngoài frame move
   useFrame(() => {
-    if (meshRef.current)
-    {
-      if(!isMoving) {
+    if (meshRef.current) {
+      if (!isMoving && pointer) {
         meshRef.current.position.set(pointer[0], pointer[1] + 0.05, pointer[2]);
-      } else {
-        
-        // const index = addedHighlights.findIndex(item => item.id === id);
-        // if(index !== -1) {
-        //   updateHighlightPosition(index, meshRef.current.position);
-        // }
       }
     }
   });
