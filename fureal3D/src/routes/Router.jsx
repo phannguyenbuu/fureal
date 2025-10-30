@@ -22,7 +22,7 @@ const Router = () => {
         path="about"
         element={
           <TransitionComponent>
-            <AboutPage />
+            {/* <AboutPage /> */}
           </TransitionComponent>
         }
       />
@@ -30,7 +30,7 @@ const Router = () => {
         path="dev-work"
         element={
           <TransitionComponent>
-            <DevWorkPage />
+            {/* <DevWorkPage /> */}
           </TransitionComponent>
         }
       />
@@ -38,7 +38,7 @@ const Router = () => {
         path="design-work"
         element={
           <TransitionComponent>
-            <DesignWorkPage />
+            {/* <DesignWorkPage /> */}
           </TransitionComponent>
         }
       />

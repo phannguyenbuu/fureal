@@ -75,6 +75,15 @@ const Scene = ({ pointerRef }) => {
           
 
 
+          
+          <LightRoomThird
+            position={[
+              -lightRoomGroupPosition.x,
+              -lightRoomGroupPosition.y,
+              -lightRoomGroupPosition.z,
+            ]}
+          />
+{/*           
           <LightRoomFirst
             position={[
               26,
@@ -91,21 +100,13 @@ const Scene = ({ pointerRef }) => {
             ]}
             scale={[-1,1,1]}
           />
-          <LightRoomThird
-            position={[
-              -lightRoomGroupPosition.x,
-              -lightRoomGroupPosition.y,
-              -lightRoomGroupPosition.z,
-            ]}
-          />
-          
           <LightTargets
             position={[
               -lightRoomGroupPosition.x,
               -lightRoomGroupPosition.y,
               -lightRoomGroupPosition.z,
             ]}
-          />
+          /> */}
 
           <DirectionArrow position={[2.5,0,-2]} scale={[2.5,1,2.5]} 
             rotation={[0,directionAxis/180 * Math.PI,0]}/>
