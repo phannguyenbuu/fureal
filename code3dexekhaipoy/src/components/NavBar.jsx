@@ -63,7 +63,7 @@ const menuItems = [
   },
   { name: 'Shop', link: '/shop' },
   { name: 'About Us', link: '/about' },
-  { name: 'Creative Space', link: 'http://31.97.76.62:5173' },
+  { name: 'Creative Space', link: 'https://n-lux.com/creative' },
 ];
 
 const menuTextSize = 'text-xl';
