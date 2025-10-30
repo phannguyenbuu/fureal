@@ -274,7 +274,7 @@ function ModifyControls({setCapture}) {
       <div style={{marginTop:-50}}>
         <FiveOptionToggle/>
       </div>
-      
+
       <div style={{width:300, marginRight:50}}>
         {message && message.split('|').map((el)=> <p style={{fontSize:12, lineHeight:'1.2rem'}}>
           {el}
@@ -309,7 +309,11 @@ function ModifyControls({setCapture}) {
             <img src="/images/delete.png" style={imgStyle} alt="Save"/><br/>
             Xóa
           </button>
+          
         </div>
+        <span style={{fontSize:10, position:'relative', marginTop:10, whiteSpace:'nowrap'}}>
+            {currentSelection? `Đang chọn: [${currentSelection.split('-')[0]}] - Nhấp chuột phải để bỏ chọn`: ``}
+          </span>
         <SimpleSlider/>
       </div>
       
@@ -341,7 +345,7 @@ export function SimpleSlider() {
 
 
   return (
-    <div style={{ width: 200, margin: 20 }}>
+    <div style={{ width: 200, marginTop: 20 }}>
       <input
         type="range"
         min="1"
@@ -350,8 +354,8 @@ export function SimpleSlider() {
         onChange={handleChange}
         style={{ width: "100%" }}
       />
-      <div style={{ textAlign: "center", marginTop: 10 }}>
-        Hướng phòng: {value}°
+      <div style={{ textAlign: "left", marginTop: 10, whiteSpace:'nowrap', fontSize: 10 }}>
+        Hướng phòng: {value}° - Trượt để chỉnh hướng phòng
       </div>
     </div>
   );

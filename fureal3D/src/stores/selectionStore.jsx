@@ -66,6 +66,7 @@ export function PointerProvider({ children }) {
   const deletePointerId = (id) => {
     const newHighlights = addedHighlights.filter(item => item.id !== id);
     setAddedHighlights(newHighlights);
+    setCurrentSelection(null);
   }
 
 

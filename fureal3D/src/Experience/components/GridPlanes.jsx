@@ -116,7 +116,7 @@ const Plane = ({ row, column, position, planeDepth, planeWidth,
         {
           if(currentSelection)
           {
-            setMessage(`ClickIt: ${currentLibNodeSelection} ${currentSelection} ${pointer}`);
+            // setMessage(`ClickIt: ${currentLibNodeSelection} ${currentSelection} ${pointer}`);
             positionPointer(currentSelection, position);
             // setIsMoving(false);
             // setPointer(null);
