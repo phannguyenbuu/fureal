@@ -33,6 +33,7 @@ export function PointerProvider({ children }) {
   const [directionAxis, setDirectionAxis] = useState(0);
   const [personAge, setPersonAge] = useState("Kim");
   const [addedHighlights, setAddedHighlights] = useState(def_funitures);
+  const [releaseMouse, setReleaseMouse] = useState(false);
 
   useEffect(()=>{
     console.log(addedHighlights);

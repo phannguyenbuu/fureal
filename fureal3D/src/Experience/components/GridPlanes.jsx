@@ -6,7 +6,7 @@ import { useToggleRoomStore } from "../../stores/toggleRoomStore";
 import gsap from "gsap";
 import { useFrame, useThree } from "@react-three/fiber";
 import { OrthographicCamera, Box, useGLTF, ContactShadows, useTexture, Decal } from '@react-three/drei';
-import { PointerHighlight } from "../PanelFurnitures";
+import PointerHighlight from "../PointerHightlight";
 
 import { useSelection, usePointer } from "../../stores/selectionStore";
 
@@ -17,8 +17,8 @@ const Plane = ({ row, column, position, planeDepth, planeWidth,
 
   const { setMessage, currentLibNodeSelection, 
     setCurrentLibNodeSelection, 
-    currentSelection, setCurrentSelection
-    
+    currentSelection, setCurrentSelection,
+    setReleaseMouse
   } = useSelection();
 
   const {directionAxis, setDirectionAxis, getResult} = usePointer();
@@ -111,17 +111,18 @@ const Plane = ({ row, column, position, planeDepth, planeWidth,
         setHovered(false);
       }}
       onClick={() => {
-        
+        setReleaseMouse();
         if(!currentLibNodeSelection)
         {
           if(currentSelection)
           {
             // setMessage(`ClickIt: ${currentLibNodeSelection} ${currentSelection} ${pointer}`);
-            positionPointer(currentSelection, position);
+            // positionPointer(currentSelection, position);
             // setIsMoving(false);
             // setPointer(null);
             // setCurrentSelection(null);
             // setCurrentLibNodeSelection(null);
+            
           }
         } else {
 
@@ -182,22 +183,29 @@ const GridPlanes = ({
   const pointerRef = useRef();
   const [pointerPosition, setPointerPosition] = useState([0, 0, 0]);
 
-  const [selectedHighlightIndex, setSelectedHighlightIndex] = useState(null);
-  // const [pointerPosition, setPointerPosition] = useState([0, 0, 0]);
+  const [selectedHighlightId, setselectedHighlightId] = useState(null);
+  const [movingId, setMovingId] = useState(null);
+
   const [currentModelFile, setCurrentModelFile] = useState(null);
   const [rotationIndex, setRotationIndex] = useState(0);
   // const [addedHighlights, setAddedHighlights] = useState([]);
 
-  const onSelectHighlight = (index) => {
-    const highlight = addedHighlights[index];
+  const onSelectHighlight = (highlight) => {
+    console.log(highlight.id, movingId);
+    if (movingId === item.id) {
+      setMovingId(null);  // Click lần nữa để thả (dừng di chuyển)
+    } else {
+      setMovingId(item.id);    // Bắt đầu di chuyển đối tượng này
+    }
+    // const highlight = addedHighlights[index];
 
     // Xóa phần tử khỏi danh sách
-    setAddedHighlights((prev) => prev.filter((_, i) => i !== index));
+    // setAddedHighlights((prev) => prev.filter((item) => item !== highlight));
 
     // Lưu lại ở pointer chính các giá trị để chỉnh sửa
-    setSelectedHighlightIndex(index);
-    setPointerPosition(highlight.position);
-    setCurrentModelFile(highlight.modelFile);
+    setselectedHighlightId(highlight.id);
+    // setPointerPosition(highlight.position);
+    // setCurrentModelFile(highlight.modelFile);
     setRotationIndex(highlight.rotationIndex || 0);
   }
 
@@ -244,14 +252,13 @@ const GridPlanes = ({
         <PointerHighlight ref={pointerRef} rotationIndex={rotationIndex}
            pointer={pointerPosition} modelFile={currentLibNodeSelection?.file}/>}
 
-        {/* {addedHighlights.map((pos, index) => (
-          <PointerHighlight key={index} pointer={pos} />
-        ))} */}
-
-        {addedHighlights.map(({id, position, modelFile, rotationIndex }, index) => (
-          <PointerHighlight key={index} id={id} pointer={position} modelFile={modelFile} 
-            rotationIndex={rotationIndex}
-            onClick={() => onSelectHighlight(index)}
+        {addedHighlights.map((item, index) => (
+          <PointerHighlight key={index} id={item.id} pointer={item.position} modelFile={item.modelFile} 
+            isSelected={selectedHighlightId === item.id}
+            isMoving={movingId === item.id}
+            setMovingId={setMovingId}
+            rotationIndex={item.rotationIndex}
+            onClick={() => onSelectHighlight(item)}
           />
         ))}
 
