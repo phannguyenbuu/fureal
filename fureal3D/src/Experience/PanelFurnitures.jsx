@@ -28,7 +28,10 @@ function PanelFurnitures() {
               alignItems: "center",
               justifyContent: "center",
             }}
-            onClick={() => setCurrentLibNodeSelection(btn)}
+            onClick={() => {
+              console.log('Plane Cell', index);
+              setCurrentLibNodeSelection(btn);
+            }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = isSelected ? "#a3d9d8ff" : "#efefef";
             }}

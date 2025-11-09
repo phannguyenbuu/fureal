@@ -18,7 +18,6 @@ const Plane = ({ row, column, position, planeDepth, planeWidth,
   const { setMessage, currentLibNodeSelection, 
     setCurrentLibNodeSelection, 
     currentSelection, setCurrentSelection,
-    setReleaseMouse
   } = useSelection();
 
   const {directionAxis, setDirectionAxis, getResult} = usePointer();
@@ -180,7 +179,7 @@ const GridPlanes = ({
   const { currentLibNodeSelection, setCurrentLibNodeSelection, currentSelection  } = useSelection();
   const { setPointer} = usePointer();
   const {addedHighlights, setAddedHighlights} = usePointer();
-  const pointerRef = useRef();
+  const selectedRef = useRef();
   const [pointerPosition, setPointerPosition] = useState([0, 0, 0]);
 
   const [selectedHighlightId, setselectedHighlightId] = useState(null);
@@ -218,10 +217,10 @@ const GridPlanes = ({
   const startZ = planeDepth / 2 - gridDepth / 2;
 
   useEffect(() => {
-    if (pointerRef.current) {
-      setPointer(pointerRef.current);
+    if (selectedRef.current) {
+      setPointer(selectedRef.current);
     }
-  }, [pointerRef.current, currentLibNodeSelection]);
+  }, [selectedRef.current, currentLibNodeSelection]);
 
 
   return (
@@ -249,7 +248,7 @@ const GridPlanes = ({
         )}
 
         {currentLibNodeSelection  &&
-        <PointerHighlight ref={pointerRef} rotationIndex={rotationIndex}
+        <PointerHighlight ref={selectedRef} rotationIndex={rotationIndex}
            pointer={pointerPosition} modelFile={currentLibNodeSelection?.file}/>}
 
         {addedHighlights.map((item, index) => (
