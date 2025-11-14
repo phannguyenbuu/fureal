@@ -12,9 +12,9 @@ import { useSelection, usePointer } from "../../stores/selectionStore";
 
 const planeZ = 0.001;
 
-const Plane = ({ row, column, position, planeDepth, planeWidth, 
-  setPointerPosition, setAddedHighlights, modelFile, data}) => {
-
+const Plane = ({ row, column, position, planeDepth, planeWidth, cost,
+  setPointerPosition, modelFile, data}) => {
+    const {addedHighlights, setAddedHighlights} = usePointer();
   const { setMessage, currentLibNodeSelection, 
     setCurrentLibNodeSelection, 
     currentSelection, setCurrentSelection,
@@ -101,8 +101,12 @@ const Plane = ({ row, column, position, planeDepth, planeWidth,
       rotation={[-Math.PI / 2, 0, 0]}
       material={material}
       onPointerMove={() => {
-        if (isTransitioning) return;
-        // setMessage(`${row}-${column}`);
+        // if (isTransitioning) return;
+        // setMessage(`${row}-${column}-${selectedRef}:${position}`);
+        // if (selectedRef) {
+        //   selectedRef.current.position.set(position.x, position.y, position.z);
+        // }
+
         setPointerPosition(position);
         setHovered(true);
       }}
@@ -110,47 +114,39 @@ const Plane = ({ row, column, position, planeDepth, planeWidth,
         setHovered(false);
       }}
       onClick={() => {
-        setReleaseMouse();
-        if(!currentLibNodeSelection)
+        // setReleaseMouse();
+        if(currentLibNodeSelection)
         {
-          if(currentSelection)
-          {
-            // setMessage(`ClickIt: ${currentLibNodeSelection} ${currentSelection} ${pointer}`);
-            // positionPointer(currentSelection, position);
-            // setIsMoving(false);
-            // setPointer(null);
-            // setCurrentSelection(null);
-            // setCurrentLibNodeSelection(null);
-            
-          }
-        } else {
-
           setAddedHighlights((current) => {
-            const index = current.findIndex(
-              (item) =>
-                Math.abs(item.position[0] - position[0]) < 0.001 &&
-                Math.abs(item.position[1] - position[1]) < 0.001 &&
-                Math.abs(item.position[2] - position[2]) < 0.001
-            );
+            // const index = current.findIndex(
+            //   (item) =>
+            //     Math.abs(item.position[0] - position[0]) < 0.001 &&
+            //     Math.abs(item.position[1] - position[1]) < 0.001 &&
+            //     Math.abs(item.position[2] - position[2]) < 0.001
+            // );
 
-            if (index !== -1) {
-              const newHighlights = [...current];
-              newHighlights[index] = {
-                ...newHighlights[index],
-                data: data,
-                rotationIndex: rotationIndex,
-              };
-              setPointer(current);
+            // if (index !== -1) {
+            //   const newHighlights = [...current];
+            //   newHighlights[index] = {
+            //     ...newHighlights[index],
+            //     data: data,
+            //     rotationIndex: rotationIndex,
+            //   };
+            //   setPointer(current);
               
-              return newHighlights;
-            } else {
+            //   return newHighlights;
+            // } else {
+              setMessage(`Đã đặt vào phòng`);
               const uniqueId = `${data.name}-${Date.now()}`;
-              const newList = [...current, { id: uniqueId, position, modelFile, data, rotationIndex: 0 }];
+
+              const newList = [...current, { id: uniqueId, position, cost,
+                modelFile, data, rotationIndex: 0 }];
               setPointer(newList[newList.length - 1]);
               return newList;
-            }
           });
           
+          // setPointer(null);
+          setCurrentLibNodeSelection(null);
         }
 
         setPointer(null);
@@ -239,25 +235,24 @@ const GridPlanes = ({
                 planeWidth={planeWidth}
                 position={[x, planeZ, z]}
                 setPointerPosition={setPointerPosition}
-                setAddedHighlights={setAddedHighlights}
+                // setAddedHighlights={setAddedHighlights}
                 modelFile={currentLibNodeSelection?.file}
                 data={currentLibNodeSelection}
+                cost={currentLibNodeSelection?.cost}
+                // selectedRef={selectedRef}
               />
             );
           })
         )}
 
-        {currentLibNodeSelection  &&
-        <PointerHighlight ref={selectedRef} rotationIndex={rotationIndex}
-           pointer={pointerPosition} modelFile={currentLibNodeSelection?.file}/>}
-
-        {addedHighlights.map((item, index) => (
-          <PointerHighlight key={index} id={item.id} pointer={item.position} modelFile={item.modelFile} 
-            isSelected={selectedHighlightId === item.id}
-            isMoving={movingId === item.id}
+        {addedHighlights.map((data, index) => (
+          <PointerHighlight key={index} data={data} 
+            // id={item.id} pointer={item.position} modelFile={item.modelFile} 
+            isSelected={selectedHighlightId === data.id}
+            isMoving={movingId === data.id}
             setMovingId={setMovingId}
-            rotationIndex={item.rotationIndex}
-            onClick={() => onSelectHighlight(item)}
+            // rotationIndex={data.rotationIndex}
+            onClick={() => onSelectHighlight(data)}
           />
         ))}
 

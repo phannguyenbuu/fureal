@@ -1,10 +1,10 @@
 import * as THREE from "three";
-
+import { useSelection, usePointer } from "../stores/selectionStore";
 import React, { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import Scene from "./Scene";
 import { Canvas } from "@react-three/fiber";
-
+import { Html } from '@react-three/drei';
 import { OrthographicCamera, Box, OrbitControls} from "@react-three/drei";
 import { Environment } from '@react-three/drei';
 
@@ -13,17 +13,70 @@ import { useResponsiveStore } from "../stores/useResponsiveStore";
 import { useExperienceStore } from "../stores/experienceStore";
 import { useThree } from "@react-three/fiber";
 import PanelFurnitures from "./PanelFurnitures";
-import html2canvas from 'html2canvas';
-import CircularButtonGroup from "./CircularButtonGroup";
+import { Button, notification } from 'antd';
+import bedroom_furnitures from "./bedroom.json";
+import living_furnitures from "./living.json";
+import PointSliderWithRotation from "./PointSliderWithRotation";
+import { createPortal } from 'react-dom';
+import ReactDOM from 'react-dom';
+
+import ModifyControls from "./components/ModifyControl";
+
+const isMB = () => {
+  return window.innerWidth < 768;
+}
+
+
+function SaveScreenshotButton({capture, setCapture}) {
+  const { gl, scene, camera } = useThree();
+
+  useEffect(() => {
+    if(capture)
+    {
+      handleSave();
+      setCapture(false);
+    }
+  },[capture]);
+
+  const handleSave = () => {
+    gl.render(scene, camera);
+    const imgData = gl.domElement.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = imgData;
+    link.download = 'screenshot.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <></>
+  );
+}
+
+function NotificationContainer({ children }) {
+  const [container, setContainer] = useState(null);
+
+  useEffect(() => {
+    setContainer(document.getElementById('portal-root'));
+  }, []);
+
+  if (!container) return null;
+
+  return ReactDOM.createPortal(children, container);
+}
+
 
 const Experience = () => {
+  const [api, contextHolder] = notification.useNotification();
   const cameraRef = useRef();
   const pointerRef = useRef({ x: 0, y: 0 });
-  const [controlsEnabled, setControlsEnabled] = useState(true);
   const { isExperienceReady } = useExperienceStore();
   const {setMessage} =  useSelection();
   const { isMobile } = useResponsiveStore();
   const [capture, setCapture] = useState(false);
+  
+  const {addedHighlights} = usePointer();
 
   const { isDarkRoom, setIsBeforeZooming, setIsTransitioning } =
     useToggleRoomStore();
@@ -31,9 +84,9 @@ const Experience = () => {
   const cameraPositions = {
     dark: {
       position: [
-        -7.65,
-        6.3,
-        8.1,
+        12,
+        10,
+        10,
       ],
     },
     light: {
@@ -144,15 +197,29 @@ const Experience = () => {
     };
   });
 
-  // useEffect(()=>{
-  //   setMessage(`${cameraPositions.dark.position}`);
-  // },[cameraPositions.dark.position]);
+    // Hàm gom nhóm và tính quantity
+  function groupFurnitures(furnitures) {
+    const grouped = furnitures.reduce((acc, item) => {
+      const key = item.name; // hoặc id nếu có
+      if (acc[key]) {
+        acc[key].quantity += 1;
+      } else {
+        acc[key] = { ...item, quantity: 1 };
+      }
+      return acc;
+    }, {});
+
+    // Chuyển object thành array
+    return Object.values(grouped);
+  }
+
 
   return (
     <>
+    {contextHolder}
       <Canvas style={{ position: "fixed", zIndex: 1, top: 0, left: 0 }} shadows gl={{ preserveDrawingBuffer: true }}>
-        <Environment files="/models/Light Room/rostock_laage_airport_1k.hdr" 
-          background={false} 
+        <Environment files="/models/NewRoom/512_martigny_square_overcast.hdr" 
+          background={false}
           environmentIntensity={1}/>
         
         
@@ -180,11 +247,20 @@ const Experience = () => {
         <SaveScreenshotButton capture={capture} setCapture={setCapture}/>
       </Canvas>
 
-      <div style={{ position: 'fixed', top: 20,  scale: isMB() ? 0.6 : 1,
+      <NotificationContainer/>
+
+      <div style={{ position: 'fixed', top: 20, gap:5, scale: isMB() ? 0.6 : 1,
+          display:'flex', flexDirection:'column',
            left: isMB() ? 20 : 20, color: 'black', zIndex:99 }}>
             <img src="/images/logo-fureal2-1.png" style={{width:150,left:-20,position:'relative'}} alt="Logo" />
           
-          <PanelFurnitures/>
+          <PanelFurnitures key='panel-bedroom' icon='/images/bed.svg' furnitures={bedroom_furnitures} title="PHÒNG NGỦ"/>
+          <PanelFurnitures key='panel-living' icon='/images/sofa.svg' furnitures={living_furnitures} title="PHÒNG KHÁCH"/>
+          {addedHighlights &&
+            <PanelFurnitures key='panel-cart' icon='/images/cart.svg' 
+              furnitures={groupFurnitures(addedHighlights.map(el=> el.data))} 
+              title="GIỎ HÀNG"/>
+          }
       </div>
       <div style={{ position: 'fixed', left: 200,  bottom: 50,
            color: 'black', zIndex:99 }}>
@@ -195,311 +271,3 @@ const Experience = () => {
 };
 
 export default Experience;
-const btnStyle = { width: 60, height: 60, padding: 0, borderRadius:10, border: '1px solid #777' };
-
-import { usePointer, useSelection } from "../stores/selectionStore";
-
-import { Html } from '@react-three/drei';
-
-function SaveScreenshotButton({capture, setCapture}) {
-  const { gl, scene, camera } = useThree();
-
-  useEffect(() => {
-    if(capture)
-    {
-      handleSave();
-      setCapture(false);
-    }
-  },[capture]);
-
-  const handleSave = () => {
-    gl.render(scene, camera);
-    const imgData = gl.domElement.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.href = imgData;
-    link.download = 'screenshot.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  return (
-    <></>
-  );
-}
-
-const imgStyle = { width: 30, height: 30 };
-
-function ModifyControls({setCapture}) {
-  
-  const { rotateLeft, rotateRight,getResult, deletePointerId } = usePointer();
-  const {setCurrentLibNodeSelection, currentSelection, message,setMessage } = useSelection();
-//   useEffect(() => {
-//   console.log("Rotation or Pointer changed", pointer, rotationIndex);
-// }, [pointer, rotationIndex]);
-
-
-  const rotateCW = () => {
-    // setRotationIndex((prev) => (prev + 1) % 4);
-    // console.log("Rotation",pointer, rotationIndex);
-    rotateLeft(currentSelection);
-    setMessage(getResult());
-  };
-
-  const rotateCCW = () => {
-    // setRotationIndex((prev) => (prev + 3) % 4); // -1 mod 4
-    // console.log("Rotation",pointer, rotationIndex);
-    rotateRight(currentSelection);
-    setMessage(getResult());
-  };
-
-  const handleSelectMode = () => {
-    setCurrentLibNodeSelection(null);
-  }
-
-  const handleDelete = () => {
-    deletePointerId(currentSelection);
-  }
-
-  const actions = [
-    {handleSelectMode, label: "Chọn", color: "#d4af37" },
-    { label: "Xoay 90", color: "#228B22" },
-    { label: "Xoay 90", color: "#1E90FF" },
-    { label: "Lưu", color: "#FF4500" },
-    { label: "Xóa", color: "#8B4513" }
-  ];
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'row', gap: 10 }}>
-      <div style={{marginTop:-50}}>
-        <FiveOptionToggle/>
-      </div>
-
-      <div style={{width:300, marginRight:50}}>
-        {message && message.split('|').map((el)=> <p style={{fontSize:12, lineHeight:'1.2rem'}}>
-          {el}
-        </p>)}
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
-
-          <div style={{ display: 'flex', flexDirection: 'row', gap:5}}>
-      
-          <button style={btnStyle} onClick={() => handleSelectMode()}>
-            <img src="/images/select.png" style={imgStyle} alt="Rotation" />
-            Chọn
-          </button>
-
-          <button style={btnStyle} onClick={() => rotateCW()}>
-            <img src="/images/rotation-icon-left.png" style={imgStyle} alt="Rotation" />
-            Xoay 90
-          </button>
-
-          <button style={btnStyle} onClick={() => rotateCCW()}>
-            <img src="/images/rotation-icon.png" style={imgStyle} alt="Rotation-Left" />
-            Xoay 90
-          </button>
-
-          <button style={btnStyle} onClick={() => setCapture(true)}>
-            <img src="/images/save.png" style={imgStyle} alt="Save"/><br/>
-            Lưu
-          </button>
-
-          <button style={btnStyle} onClick={() => handleDelete()}>
-            <img src="/images/delete.png" style={imgStyle} alt="Save"/><br/>
-            Xóa
-          </button>
-          
-        </div>
-        <span style={{fontSize:10, position:'relative', marginTop:10, whiteSpace:'nowrap'}}>
-            {currentSelection? `Đang chọn: [${currentSelection.split('-')[0]}] - Nhấp chuột phải để bỏ chọn`: ``}
-          </span>
-        <SimpleSlider/>
-      </div>
-      
-    </div>
-  );
-}
-
-
-// import React, { useRef } from "react";
-// import { Canvas, useThree } from "@react-three/fiber";
-
-
-export function SimpleSlider() {
-  const {directionAxis, setDirectionAxis, getResult, personAge, setPersonAge} = usePointer();
-  const {setMessage} = useSelection();
-  const [value, setValue] = useState(directionAxis);
-
-  const handleChange = (event) => {
-    setValue(parseInt(event.target.value));
-  };
-
-  useEffect(()=>{
-    setDirectionAxis(value);
-  },[value]);
-
-  useEffect(()=>{
-    setMessage(getResult());
-  },[directionAxis]);
-
-
-  return (
-    <div style={{ width: 200, marginTop: 20 }}>
-      <input
-        type="range"
-        min="1"
-        max="360"
-        value={value}
-        onChange={handleChange}
-        style={{ width: "100%" }}
-      />
-      <div style={{ textAlign: "left", marginTop: 10, whiteSpace:'nowrap', fontSize: 10 }}>
-        Hướng phòng: {value}° - Trượt để chỉnh hướng phòng
-      </div>
-    </div>
-  );
-}
-
-const isMB = () => {
-  return window.innerWidth < 768;
-}
-
-// import React, { useState, useEffect } from "react";
-import rules from "./rules.json";
-
-const colors = [
-  { label: "Kim", color: "#d4af37" },
-  { label: "Mộc", color: "#228B22" },
-  { label: "Thủy", color: "#1E90FF" },
-  { label: "Hỏa", color: "#FF4500" },
-  { label: "Thổ", color: "#8B4513" }
-];
-
-export function FiveOptionToggle() {
-  const { setMessage } = useSelection();
-  const [selected, setSelected] = useState("Kim");
-  const [hovered, setHovered] = useState(null);
-  const { getResult, setPersonAge } = usePointer();
-
-  useEffect(() => {
-    if (!rules || !rules[selected]) return;
-    setMessage(getResult());
-  }, [selected]);
-
-  const handleClick = (label) => {
-    setSelected(label);
-    setPersonAge(label);
-  };
-
-  const handleResultClick = () => {
-    setMessage(getResult());
-  };
-
-  const angles = 360 / colors.length;
-  const radius = 100;
-  const center = 120;
-  const holeRadius = 40;
-
-  const createSector = (index) => {
-    const startAngle = (angles * index) - (angles / 2);
-    const endAngle = startAngle + angles;
-    const startRad = (Math.PI / 180) * startAngle;
-    const endRad = (Math.PI / 180) * endAngle;
-
-    const x1 = center + radius * Math.cos(startRad);
-    const y1 = center + radius * Math.sin(startRad);
-    const x2 = center + radius * Math.cos(endRad);
-    const y2 = center + radius * Math.sin(endRad);
-
-    const x3 = center + holeRadius * Math.cos(endRad);
-    const y3 = center + holeRadius * Math.sin(endRad);
-    const x4 = center + holeRadius * Math.cos(startRad);
-    const y4 = center + holeRadius * Math.sin(startRad);
-
-    return `
-      M ${x1} ${y1}
-      A ${radius} ${radius} 0 0 1 ${x2} ${y2}
-      L ${x3} ${y3}
-      A ${holeRadius} ${holeRadius} 0 0 0 ${x4} ${y4}
-      Z
-    `;
-  };
-
-  return (
-    <div style={{ textAlign: 'center', userSelect: 'none' }}>
-      
-
-      <svg
-        width={center * 2}
-        height={center * 2}
-        viewBox={`0 0 ${center * 2} ${center * 2}`}
-        style={{ cursor: 'pointer' }}
-      >
-        {colors.map(({ label, color }, i) => {
-          const isSelected = label === selected;
-          const isHovered = label === hovered;
-          const path = createSector(i);
-          const angle = (angles * i);
-          const rad = (Math.PI / 180) * angle;
-          const labelX = center + ((radius + holeRadius) / 2) * Math.cos(rad);
-          const labelY = center + ((radius + holeRadius) / 2) * Math.sin(rad);
-
-          return (
-            <g
-              key={label}
-              onClick={() => handleClick(label)}
-              onMouseEnter={() => setHovered(label)}
-              onMouseLeave={() => setHovered(null)}
-              style={{ transition: "all 0.3s" }}
-            >
-              <path
-                d={path}
-                fill={isSelected || isHovered ? color : "#eee"}
-                stroke={isSelected || isHovered ? color : "#ccc"}
-                strokeWidth={isSelected || isHovered ? 3 : 1}
-                style={{ transition: "all 0.3s" }}
-              />
-              <text
-                x={labelX}
-                y={labelY + 4}
-                fill={isSelected || isHovered ? "white" : "black"}
-                fontWeight={isSelected || isHovered ? "bold" : "normal"}
-                fontSize={14}
-                textAnchor="middle"
-                pointerEvents="none"
-              >
-                {label}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* Vòng tròn hole trắng giữa */}
-        <circle
-          cx={center}
-          cy={center}
-          r={holeRadius}
-          fill={hovered === 'center' || hovered === null ? "white" : "#ddd"}
-          style={{ transition: "fill 0.3s" }}
-          onMouseEnter={() => setHovered('center')}
-          onMouseLeave={() => setHovered(null)}
-        />
-
-        {/* Text ở tâm vòng tròn */}
-        <text
-          x={center}
-          y={center}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fill={hovered === 'center' ? "#007BFF" : "black"}
-          fontWeight="bold"
-          fontSize={10}
-          style={{ userSelect: 'none', pointerEvents: 'none', transition: "fill 0.3s" }}
-        >
-          {'Mệnh gia chủ'.toUpperCase()}
-        </text>
-      </svg>
-    </div>
-  );
-}

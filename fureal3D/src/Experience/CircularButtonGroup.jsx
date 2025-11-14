@@ -1,15 +1,19 @@
 import React, { useState } from "react";
-
+// import { notification } from "antd";
 
 export default function CircularButtonGroup({actions}) {
   const { setMessage } = useSelection();
   const [selected, setSelected] = useState("Kim");
   const [hovered, setHovered] = useState(null);
   const { getResult, setPersonAge } = usePointer();
+  // const [api, contextHolder] = notification.useNotification();
 
   useEffect(() => {
+    
     if (!rules || !rules[selected]) return;
     setMessage(getResult());
+    
+
   }, [selected]);
 
   const handleClick = (_label) => {
@@ -54,6 +58,8 @@ export default function CircularButtonGroup({actions}) {
   };
 
   return (
+    <>
+    {contextHolder}
     <div style={{ textAlign: 'center', userSelect: 'none' }}>
       
 
@@ -128,5 +134,6 @@ export default function CircularButtonGroup({actions}) {
         </text>
       </svg>
     </div>
+    </>
   );
 }

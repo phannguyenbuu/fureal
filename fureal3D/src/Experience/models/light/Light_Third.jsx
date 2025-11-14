@@ -4,11 +4,12 @@ Command: npx gltfjsx@6.5.3 Light_Third.glb
 */
 
 import React, {useEffect, useRef } from "react";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, useTexture  } from "@react-three/drei";
 import { convertMaterialsToBasic } from "../../utils/convertToBasic";
 import * as THREE from 'three';
 import { ContactShadows } from '@react-three/drei';
 
+import { OBJExporter } from "../../ObjExporter";
 
 
 
@@ -57,171 +58,66 @@ const glossyAluminumMaterial = new THREE.MeshPhysicalMaterial({
   envMapIntensity: 1.0,  // độ mạnh phản chiếu môi trường nếu có envMap
 });
 
-export const UVWPlaneXY = (node) => {
-  if (!node.geometry.boundingBox) {
-    node.geometry.computeBoundingBox();
-  }
-  const bbox = node.geometry.boundingBox;
-  const min = bbox.min;
-  const max = bbox.max;
-  const uvAttribute = node.geometry.attributes.uv;
-  const position = node.geometry.attributes.position;
+export default function Model() {
   
-  for (let i = 0; i < uvAttribute.count; i++) {
-    const x = position.getX(i);
-    const y = position.getY(i);
-
-    const u = (x - min.x) / (max.x - min.x);
-    const v = (y - min.y) / (max.y - min.y);
-    uvAttribute.setXY(i, u, v);
-  }
-  uvAttribute.needsUpdate = true;
-};
-
-
-export const UVWPlaneXZ = (node) => {
-  if (!node.geometry.boundingBox) {
-    node.geometry.computeBoundingBox();
-  }
-  const bbox = node.geometry.boundingBox;
-  const min = bbox.min;
-  const max = bbox.max;
-  const uvAttribute = node.geometry.attributes.uv;
-  const position = node.geometry.attributes.position;
-
-  for (let i = 0; i < uvAttribute.count; i++) {
-    const x = position.getX(i);
-    const z = position.getZ(i);
-
-    const u = (x - min.x) / (max.x - min.x);
-    const v = (z - min.z) / (max.z - min.z);
-    uvAttribute.setXY(i, u, v);
-  }
-  uvAttribute.needsUpdate = true;
-};
+  const exportOBJ = () => {
+    const exporter = new OBJExporter();
+    const result = exporter.parse(scene);
+    const blob = new Blob([result], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'exported_model.obj';
+    link.click();
+  };
 
 
-export const UVWPlaneYZ = (node) => {
-  if (!node.geometry.boundingBox) {
-    node.geometry.computeBoundingBox();
-  }
-  const bbox = node.geometry.boundingBox;
-  const min = bbox.min;
-  const max = bbox.max;
-  const uvAttribute = node.geometry.attributes.uv;
-  const position = node.geometry.attributes.position;
+  // const { nodes, materials, scene } = useGLTF('/models/NewRoom/NewRoom.glb');
+  // const lightMap = useTexture('/models/NewRoom/lightmap.png');
+  // const { nodes, materials, scene } = useGLTF('/models/Light Room/dining_room-transformed.glb');
+  const { nodes, materials, scene } = useGLTF('/models/Light Room/Light_Third.glb');
+  const lightMap = useTexture('/models/NewRoom/living_room_lightmap_noncolor_1k.png');
+  lightMap.flipY = false; // Quan trọng để ánh xạ UV đúng
+
+  ["Frame_Pictures","Mirror","Plant_Leaves"].map(el=>
+  {
   
-  for (let i = 0; i < uvAttribute.count; i++) {
-    const y = position.getY(i);
-    const z = position.getZ(i);
+    // Xóa mesh tên 'sofa' khỏi scene
+    const meshToRemove = scene.getObjectByName(el);
+    if (meshToRemove) {
+      meshToRemove.geometry.dispose();
+      if (Array.isArray(meshToRemove.material)) {
+        meshToRemove.material.forEach(mat => mat.dispose());
+      } else {
+        meshToRemove.material.dispose();
+      }
+      meshToRemove.parent.remove(meshToRemove);
+  }});
 
-    const u = (y - min.y) / (max.y - min.y);
-    const v = (z - min.z) / (max.z - min.z);
-    uvAttribute.setXY(i, u, v);
-  }
-  uvAttribute.needsUpdate = true;
-};
-
-
-export default function Model(props) {
-  const { nodes, materials } = useGLTF("/models/Light Room/boxroom.glb");
-  const groupRef = useRef();
-
-  const newMaterials = convertMaterialsToBasic(materials);
-  const greyMaterial = new THREE.MeshStandardMaterial({ color: "grey" });
   
-  const isNode = (node) => {
-    return true;
-  }
+  // Gán lightmap cho từng mesh còn lại
+  scene.traverse((child) => {
+    if (child.isMesh) {
+      console.log(child);
+      // child.material.map = lightMap;
+      // child.material.lightMap = lightMap;
+      // child.material.lightMapIntensity = 1;
+      // child.material.needsUpdate = true;
+    }
+  });
 
-  useEffect(() => {
-    // Object.values(nodes).forEach((node) => {
-    //   console.log("Node", node.name);
+  // exportOBJ();
 
-    //   if (isNode(node)) {
-    //     // Lấy bounding box của node
-    //     const bbox = new THREE.Box3().setFromObject(node);
-    //     console.log("Bounding Box Min:", bbox.min);
-    //     console.log("Bounding Box Max:", bbox.max);
-
-    //     if(node.name === "SampleRoom_Room_1")
-    //       UVWPlaneXZ(node);
-    //     else if(node.name === "SampleRoom_Room_4")
-    //       UVWPlaneXZ(node);
-    //     else if(node.name === "SampleRoom_Room_5") //Door
-    //       UVWPlaneYZ(node);
-    //     else if(node.name === "SampleRoom_Room_6")
-    //       UVWPlaneXZ(node);
-    //   }
-    // });
-
-    // Object.values(materials).forEach(mtl => {
-    //   console.log('mtl',mtl);
-    // });
-  }, [nodes]);
-
-  return (
-    <group {...props} dispose={null} ref={groupRef} 
-      scale={[1,1,1]} position={[2,0,-2.5]} castShadow receiveShadow>
-        
-        
-      {/* <mesh
-          geometry={nodes.SampleRoom_Room_4.geometry}
-          
-          material={createMtl('/models/Light Room/floor.jpg')}
-        />
-      <mesh name="Glass"
-          geometry={nodes.SampleRoom_Room_2.geometry}
-          
-          material={glassMaterial}
-        />
-      <mesh name="Wall"
-          geometry={nodes.SampleRoom_Room_1.geometry}
-          material={createMtl('/models/Light Room/wall_shadow.jpg')}
-        />
-      <mesh name="Alumium"
-        geometry={nodes.SampleRoom_Room_3.geometry}
-          
-          material={glossyAluminumMaterial}
-        />
-
-      <mesh name="Door"
-        geometry={nodes.SampleRoom_Room_5.geometry}
-          material={createMtl('/models/Light Room/AI19_004_bump_wood.jpg')}
-        />
-        
-      <mesh name="Wall_Door"
-        geometry={nodes.SampleRoom_Room_6.geometry}
-          material={createMtl('/models/Light Room/wall.jpg')}
-        /> */}
-
-
-      {Object.values(nodes).map(
-          (node, index) =>
-            node.geometry && (
-              <mesh
-                key={index}
-                geometry={node.geometry}
-                material={materials[node.material?.name] || materials.default}
-                position={node.position}
-                rotation={node.rotation}
-                scale={node.scale}
-              />
-            )
-        )}
-    
-      
-    </group>
-  );
+  return <primitive object={scene} />;
 }
 
-useGLTF.preload("/models/Light Room/Light_Third.glb");
-useGLTF.preload("/models/Light Room/obj/Bed.glb");
-useGLTF.preload("/models/Light Room/obj/Bedtab.glb");
-useGLTF.preload("/models/Light Room/obj/Bench.glb");
-useGLTF.preload("/models/Light Room/obj/direction.glb");
-useGLTF.preload("/models/Light Room/obj/WorkTable.glb");
-useGLTF.preload("/models/Light Room/obj/Readchair.glb");
-useGLTF.preload("/models/Light Room/obj/Wardrobe1m2.glb");
-useGLTF.preload("/models/Light Room/obj/Wardrobe2m4.glb");
-useGLTF.preload("/models/Light Room/obj/Wardrobe3m6.glb");
+// useGLTF.preload("/models/Light Room/Light_Third.glb");
+// useGLTF.preload("/models/Light Room/obj/Bed.glb");
+// useGLTF.preload("/models/Light Room/obj/Bedtab.glb");
+// useGLTF.preload("/models/Light Room/obj/Bench.glb");
+// useGLTF.preload("/models/Light Room/obj/direction.glb");
+// useGLTF.preload("/models/Light Room/obj/WorkTable.glb");
+// useGLTF.preload("/models/Light Room/obj/Readchair.glb");
+// useGLTF.preload("/models/Light Room/obj/Wardrobe1m2.glb");
+// useGLTF.preload("/models/Light Room/obj/Wardrobe2m4.glb");
+// useGLTF.preload("/models/Light Room/obj/Wardrobe3m6.glb");

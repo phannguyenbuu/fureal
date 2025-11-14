@@ -11,6 +11,12 @@ import LightRoomThird from "./models/light/Light_Third";
 import LightRoomFourth from "./models/light/Light_Fourth";
 import DarkTargets from "./models/dark/Dark_Targets";
 import LightTargets from "./models/light/Light_Targets";
+
+
+
+import CustomRoom from "./models/light/CustomRoom.jsx";
+
+
 import GridPlanes from "./components/GridPlanes";
 import DirectionArrow from "./models/light/DirectionArrow";
 import { useToggleRoomStore } from "../stores/toggleRoomStore";
@@ -71,46 +77,9 @@ const Scene = ({ pointerRef }) => {
   return (
     <>
       <Suspense>
-        <group ref={darkGroupRef}>
-          
-
-
-          
-          <LightRoomThird
-            position={[
-              -lightRoomGroupPosition.x,
-              -lightRoomGroupPosition.y,
-              -lightRoomGroupPosition.z,
-            ]}
-          />
-{/*           
-          <LightRoomFirst
-            position={[
-              26,
-              0,
-              -3.5,
-            ]}
-            scale={[-1,1,1]}
-          />
-          <LightRoomSecond
-            position={[
-              26,
-              0,
-              -3.5,
-            ]}
-            scale={[-1,1,1]}
-          />
-          <LightTargets
-            position={[
-              -lightRoomGroupPosition.x,
-              -lightRoomGroupPosition.y,
-              -lightRoomGroupPosition.z,
-            ]}
-          /> */}
-
-          <DirectionArrow position={[2.5,0,-2]} scale={[2.5,1,2.5]} 
+        <CustomRoom position={[2.5,0,-2]} w={8} h={3.6} l={6}/>
+        <DirectionArrow position={[2.5,0,-2]} scale={[2.5,1,2.5]} 
             rotation={[0,directionAxis/180 * Math.PI,0]}/>
-        </group>
 
         <group ref={lightGroupRef} position={lightRoomGroupPosition}>
           {/* <DarkRoomFirst /> */}

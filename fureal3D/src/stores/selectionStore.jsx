@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import rules from "../Experience/rules.json";
 import def_funitures from "./default.json";
+import { notification } from "antd";
 const SelectionContext = createContext();
 
 export function SelectionProvider({ children }) {
@@ -26,7 +27,10 @@ export function useSelection() {
 
 const PointerContext = createContext();
 
+
+
 export function PointerProvider({ children }) {
+  
   // const [isMoving, setIsMoving] = useState(false);
   const [pointer, setPointer] = useState(null);
   const [rotationIndex, setRotationIndex] = useState(0);
@@ -34,10 +38,11 @@ export function PointerProvider({ children }) {
   const [personAge, setPersonAge] = useState("Kim");
   const [addedHighlights, setAddedHighlights] = useState(def_funitures);
   // const [releaseMouse, setReleaseMouse] = useState(false);
-
-  useEffect(()=>{
-    console.log(addedHighlights);
-  },[addedHighlights]);
+  const [roomWidth, setRoomWidth] = useState(8);
+  const [roomLength, setRoomLength] = useState(6);
+  const [roomHeight, setRoomHeight] = useState(3.6);
+  const [roomDoor, setRoomDoor] = useState(0);
+  const [cart, setCart] = useState([]);
 
   const getResult = () => {
     const i = addedHighlights.findIndex(item => item.data.type === "bed");
@@ -69,6 +74,79 @@ export function PointerProvider({ children }) {
     setAddedHighlights(newHighlights);
     setCurrentSelection(null);
   }
+
+  
+    async function fetchSaveApi() {
+      const url = 'https://admake.vn/api/fureal/save';
+      const data = {
+        models: addedHighlights,
+        room: {width:roomWidth, height:roomHeight, length: roomLength, door:roomDoor}
+      };
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST', // hoặc 'GET' tùy API
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({username:"Test", data}) // dữ liệu gửi đi
+        });
+  
+        if (!response.ok) {
+  
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        const result = await response.json(); // parse JSON trả về
+        console.log('Save:', data, result);
+        // setMessage({message:`Lưu file thành công`});
+        return result;
+      } catch (error) {
+        // Bắt lỗi mạng hoặc lỗi khác
+        // setMessage(`Lưu file thất bại:`);
+        throw error; // hoặc xử lý lỗi theo cách bạn muốn
+      }
+    }
+  
+    const saveJson = () => {
+      fetchSaveApi(addedHighlights);
+    }
+  
+    async function fetchLoadApi(username) {
+      const url = 'https://admake.vn/api/fureal/load';
+      try {
+        const response = await fetch(url, {
+          method: 'POST', 
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username }) 
+        });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        const result = await response.json();
+        // setMessage({message:`Tải dữ liệu thành công`});
+        console.log('Load API', result);
+
+        setAddedHighlights(result.models);
+        setRoomWidth(result.room.width);
+        setRoomLength(result.room.length);
+        setRoomHeight(result.room.height);
+        setRoomDoor(result.room.door);
+
+        return result;
+      } catch (error) {
+        // setMessage({message:`Tải dữ liệu thất bại`});
+        throw error;
+      }
+    }
+  
+    const loadJson = () => {
+      fetchLoadApi("Test");
+    }
 
 
   function getDirectionIndex(angle) {
@@ -170,10 +248,15 @@ export function PointerProvider({ children }) {
 
   return (
     <PointerContext.Provider value={{ pointer, setPointer, personAge, setPersonAge,
-        directionAxis, setDirectionAxis, getResult,
+        directionAxis, setDirectionAxis, getResult,saveJson,loadJson,
         addedHighlights, setAddedHighlights, 
         deletePointerId,
+        roomWidth, setRoomWidth,
+        roomLength, setRoomLength,
+        roomHeight, setRoomHeight,
         rotateLeft, rotateRight, 
+        roomDoor, setRoomDoor,
+        cart, setCart,
         positionPointer, setPointerIdRotationIndex }}>
       {children}
     </PointerContext.Provider>

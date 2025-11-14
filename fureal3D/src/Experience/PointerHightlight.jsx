@@ -1,5 +1,4 @@
 import { useSelection, usePointer } from "../stores/selectionStore";
-import furnitures from "./furnitures.json";
 import * as THREE from "three";
 
 import React, { useMemo, useState, useRef, useEffect } from "react";
@@ -7,58 +6,29 @@ import React, { useMemo, useState, useRef, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { OrthographicCamera, Box, useGLTF, ContactShadows, useTexture, Decal } from '@react-three/drei';
 
-const PointerHighlight = React.forwardRef((
-    {id, isMoving, isSelected, pointer, setMovingId, modelFile, rotationIndex }, ref) => {
+const PointerHighlight = React.forwardRef(({data, isMoving, setMovingId, isSelected}, ref) => {
+  
+    // {data.id, , pointer,  data.modelFile, data.rotationIndex }
+
   const meshRef = ref || React.useRef();
   const [isHovered, setIsHovered] = React.useState(false);
   const {currentSelection, setCurrentSelection} = useSelection();
-  const { setPointer } = usePointer();
+  // const { setPointer } = usePointer();
   // const [isMoving, setIsMoving] = useState(false);
-  const {addedHighlights, setAddedHighlights} = usePointer();
-  const model = modelFile ? useGLTF(modelFile) : null;
-  const decalTexture = useTexture('/models/Light Room/shadow-circle.png');
+  const {addedHighlights, setAddedHighlights, setMessage} = usePointer();
+  // console.log('model', data);
+  const model = data.modelFile ? useGLTF(data.modelFile) : null;
+  // const decalTexture = useTexture('/models/Light Room/shadow-circle.png');
 
-const onClickHighlight = () => {
-  
-  console.log('PH', isMoving, id);
-  if (isMoving) {
-    setMovingId(null);    // dừng di chuyển nếu đang moving
-  } else {
-    setMovingId(id);
-    // setPointer(id);      // bắt đầu di chuyển đối tượng này
-    setCurrentSelection(id);
-  }
-};
-
-  // const onClickHighlight = () => {
-  //   if (isMoving) {
-  //     // setIsMoving(false);
-  //     setPointer(null);   // reset pointer nếu cần
-  //   } else {
-  //     // Nếu chưa di chuyển thì bắt đầu di chuyển
-  //     // setIsMoving(true);
-  //     setPointer(id);  // Đưa id hiện tại làm pointer để nhận biết đang di chuyển highlight nào
-  //     setCurrentSelection(id); // Cập nhật selection nếu cần
-  //   }
-  // };
-
-  // const onClickHighlight = () => {
-  //   console.log('Selection', addedHighlights);
-  //   setIsMoving(prev => {
-  //     if (prev) {
-  //       setPointer(null); // reset pointer khi dừng
-  //       return false;
-  //     }
-  //     return true;
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   if (!isSelected) {
-  //     setIsMoving(false);
-  //   }
-  // }, [isSelected]);
-
+  const onClickHighlight = () => {
+    if (isMoving) {
+      setMovingId(null);    // dừng di chuyển nếu đang moving
+    } else {
+      setMovingId(data.id);
+      setMessage(`Bạn đang chọn ${data.name} click tiếp để đặt vật dụng`)
+      setCurrentSelection(data.id);
+    }
+  };
 
   const [bboxSize, setBboxSize] = React.useState([1, 1]);
 
@@ -81,25 +51,32 @@ const onClickHighlight = () => {
       meshRef.current.position.x = intersectPoint.x;
       meshRef.current.position.z = intersectPoint.z;
 
-      setCurrentSelection(id);
+      
+      setCurrentSelection(data.id);
     }
   });
 
-  // // Cập nhật khi pointer thay đổi ngoài frame move
-  // useFrame(() => {
-  //   if (meshRef.current) {
-  //     if (isMoving && pointer && isSelected) {
-  //       // meshRef.current.position.set(pointer[0], pointer[1] + 0.05, pointer[2]);
-  //     }
-  //   }
-  // },[pointer]);
+
+  useEffect(()=>{
+    if (!meshRef.current) return;
+
+    setAddedHighlights(prevHighlights => 
+      prevHighlights.map(item => 
+        item.id === data.id // điều kiện xác định item cần update
+          ? { ...item, position: [meshRef.current.position.x, item.position[1], meshRef.current.position.z] }
+          : item
+      )
+    );
+
+  },[isMoving]);
 
 
   return (
-    <group ref={meshRef} rotation={[0, rotationIndex * Math.PI / 2, 0]} 
+    <group ref={meshRef} rotation={[0, data.rotationIndex * Math.PI / 2, 0]} 
       onPointerOver={() => setIsHovered(true)}
       onPointerOut={() => setIsHovered(false)}
       onClick={onClickHighlight}
+      position={data.position}
       // raycast={(...args) => THREE.Mesh.prototype.raycast.apply(this, args)} // đảm bảo raycast
       >
       

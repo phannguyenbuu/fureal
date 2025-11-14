@@ -10,6 +10,7 @@ import Router from "./routes/Router";
 import Overlay from "./components/Overlay/Overlay";
 import Logo from "./components/Logo/Logo";
 import { SelectionProvider, PointerProvider } from "./stores/selectionStore";
+import 'antd/dist/reset.css';
 
 function App() {
   const { updateDimensions } = useResponsiveStore();
