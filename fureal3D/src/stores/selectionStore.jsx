@@ -36,12 +36,12 @@ export function PointerProvider({ children }) {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [directionAxis, setDirectionAxis] = useState(0);
   const [personAge, setPersonAge] = useState("Kim");
-  const [addedHighlights, setAddedHighlights] = useState(def_funitures);
+  const [addedHighlights, setAddedHighlights] = useState(def_funitures.models);
   // const [releaseMouse, setReleaseMouse] = useState(false);
-  const [roomWidth, setRoomWidth] = useState(8);
-  const [roomLength, setRoomLength] = useState(6);
-  const [roomHeight, setRoomHeight] = useState(3.6);
-  const [roomDoor, setRoomDoor] = useState(0);
+  const [roomWidth, setRoomWidth] = useState(def_funitures.room.width);
+  const [roomLength, setRoomLength] = useState(def_funitures.room.length);
+  const [roomHeight, setRoomHeight] = useState(def_funitures.room.height);
+  const [roomDoor, setRoomDoor] = useState(def_funitures.room.door);
   const [cart, setCart] = useState([]);
 
   const getResult = () => {
