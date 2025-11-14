@@ -88,7 +88,6 @@ function PanelFurnituresModal({furnitures, title, icon}) {
                   borderRadius: 5,
                   textAlign: "left",
                   padding: 2,
-                  display:'flex',
                 }}
                 onClick={() => handleSelect(btn)}
               >
