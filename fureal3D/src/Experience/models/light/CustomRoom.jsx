@@ -19,8 +19,8 @@ export default function Model({ ...props }) {
   const subw = 1.28;
 
   useEffect(()=>{
-      const w = roomWidth - 0.3;
-      const l = roomLength - 0.3;
+      const w = roomWidth - 0.3 * roomWidth/5;
+      const l = roomLength - 0.3 * roomLength/5;
       // Chu vi hình chữ nhật
       const perimeter = 2 * (w + l);
   
