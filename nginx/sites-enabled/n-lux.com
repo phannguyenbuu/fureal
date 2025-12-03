@@ -50,8 +50,9 @@ server {
         proxy_cache_bypass $http_upgrade;
     }
 
+    # ✅ REPLACE location /creative/ hiện tại bằng:
     location /creative/ {
-        proxy_pass http://127.0.0.1:5173/;  # ✅ Strip /creative/
+        proxy_pass http://127.0.0.1:5173/;
         
         # WebSocket HMR
         proxy_http_version 1.1;
@@ -59,7 +60,23 @@ server {
         proxy_set_header Connection "upgrade";
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # ✅ FORCE JS MIME TYPE - QUAN TRỌNG!
+        location ~* \.js$ {
+            proxy_pass http://127.0.0.1:5173;
+            add_header Content-Type "application/javascript;charset=utf-8" always;
+            add_header Content-Encoding "";  # Clear encoding issues
+            proxy_hide_header Content-Type;   # Remove Vite's wrong MIME
+        }
+        
+        location ~* \.css$ {
+            proxy_pass http://127.0.0.1:5173;
+            add_header Content-Type "text/css;charset=utf-8" always;
+            proxy_hide_header Content-Type;
+        }
     }
+
+
 
 
 }
