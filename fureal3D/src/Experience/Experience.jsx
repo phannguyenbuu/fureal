@@ -12,7 +12,7 @@ import { useToggleRoomStore } from "../stores/toggleRoomStore";
 import { useResponsiveStore } from "../stores/useResponsiveStore";
 import { useExperienceStore } from "../stores/experienceStore";
 import { useThree } from "@react-three/fiber";
-import PanelFurnitures from "./PanelFurnitures";
+
 import { Button, notification } from 'antd';
 import bedroom_furnitures from "./bedroom.json";
 import living_furnitures from "./living.json";
@@ -21,6 +21,8 @@ import { createPortal } from 'react-dom';
 import ReactDOM from 'react-dom';
 
 import ModifyControls from "./components/ModifyControl";
+
+import FurnitureModal from "./FunitureModal";
 
 const isMB = () => {
   return window.innerWidth < 768;
@@ -249,7 +251,7 @@ const Experience = () => {
 
       <NotificationContainer/>
 
-      <div style={{ position: 'fixed', top: 20, gap:5, scale: isMB() ? 0.6 : 1,
+      {/* <div style={{ position: 'fixed', top: 20, gap:5, scale: isMB() ? 0.6 : 1,
           display:'flex', flexDirection:'column',
            left: isMB() ? 20 : 20, color: 'black', zIndex:99 }}>
             <img src="/images/logo-fureal2-1.png" style={{width:150,left:-20,position:'relative'}} alt="Logo" />
@@ -261,7 +263,16 @@ const Experience = () => {
               furnitures={groupFurnitures(addedHighlights.map(el=> el.data))} 
               title="GIỎ HÀNG"/>
           }
-      </div>
+      </div> */}
+
+      <FurnitureModal 
+        bedroom_furnitures={bedroom_furnitures}
+        living_furnitures={living_furnitures}
+        addedHighlights={addedHighlights}
+        groupFurnitures={groupFurnitures}
+        isMB={isMB}
+      />
+
       <div style={{ position: 'fixed', left: 200,  bottom: 50,
            color: 'black', zIndex:99 }}>
           <ModifyControls setCapture={setCapture}/>

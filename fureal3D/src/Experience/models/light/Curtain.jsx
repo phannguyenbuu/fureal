@@ -11,7 +11,7 @@ import { ContactShadows } from '@react-three/drei';
 
 import { OBJExporter } from "../../ObjExporter";
 
-
+import { clone } from '../../SkeletonUtils';
 
 export const createMtl = (img) => {
   const textureLoader = new THREE.TextureLoader();
@@ -58,45 +58,13 @@ const glossyAluminumMaterial = new THREE.MeshPhysicalMaterial({
   envMapIntensity: 1.0,  // độ mạnh phản chiếu môi trường nếu có envMap
 });
 
-export default function Model(props) {
+export default function Curtain({ uniqueKey = "curtain", ...props }) {
   
-  // const exportOBJ = () => {
-  //   const exporter = new OBJExporter();
-  //   const result = exporter.parse(scene);
-  //   const blob = new Blob([result], { type: 'text/plain' });
-  //   const url = URL.createObjectURL(blob);
-  //   const link = document.createElement('a');
-  //   link.href = url;
-  //   link.download = 'exported_model.obj';
-  //   link.click();
-  // };
-
-
-  // const { nodes, materials, scene } = useGLTF('/models/NewRoom/NewRoom.glb');
-  // const lightMap = useTexture('/models/NewRoom/lightmap.png');
-  // const { nodes, materials, scene } = useGLTF('/models/Light Room/dining_room-transformed.glb');
   const { nodes, materials, scene } = useGLTF('/models/NewRoom/curtain.glb');
-  // const lightMap = useTexture('/models/NewRoom/living_room_lightmap_noncolor_1k.png');
-  // lightMap.flipY = false; // Quan trọng để ánh xạ UV đúng
-
-  // ["Frame_Pictures","Mirror","Plant_Leaves"].map(el=>
-  // {
   
-  //   // Xóa mesh tên 'sofa' khỏi scene
-  //   const meshToRemove = scene.getObjectByName(el);
-  //   if (meshToRemove) {
-  //     meshToRemove.geometry.dispose();
-  //     if (Array.isArray(meshToRemove.material)) {
-  //       meshToRemove.material.forEach(mat => mat.dispose());
-  //     } else {
-  //       meshToRemove.material.dispose();
-  //     }
-  //     meshToRemove.parent.remove(meshToRemove);
-  // }});
-
-  
+  const clonedScene = React.useMemo(() => clone(scene), [scene]);
   // Gán lightmap cho từng mesh còn lại
-  scene.traverse((child) => {
+  clonedScene.traverse((child) => {
     if (child.isMesh) {
       console.log(child);
       if (child.name === 'export_sample_bedroom_Curtain') {
@@ -112,18 +80,7 @@ export default function Model(props) {
 
   return (
   <group {...props} dispose={null}>
-    <primitive object={scene} scale={1} position={[0,0,0]} />
+    <primitive key={`${uniqueKey}-scene`} object={clonedScene} scale={[1.45,1,1]} position={[0,0,0]} />
   </group>);
 
 }
-
-// useGLTF.preload("/models/Light Room/Light_Third.glb");
-// useGLTF.preload("/models/Light Room/obj/Bed.glb");
-// useGLTF.preload("/models/Light Room/obj/Bedtab.glb");
-// useGLTF.preload("/models/Light Room/obj/Bench.glb");
-// useGLTF.preload("/models/Light Room/obj/direction.glb");
-// useGLTF.preload("/models/Light Room/obj/WorkTable.glb");
-// useGLTF.preload("/models/Light Room/obj/Readchair.glb");
-// useGLTF.preload("/models/Light Room/obj/Wardrobe1m2.glb");
-// useGLTF.preload("/models/Light Room/obj/Wardrobe2m4.glb");
-// useGLTF.preload("/models/Light Room/obj/Wardrobe3m6.glb");

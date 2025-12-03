@@ -27,7 +27,7 @@ export function useSelection() {
 
 const PointerContext = createContext();
 
-
+import materials from "../json/materials.json";
 
 export function PointerProvider({ children }) {
   
@@ -42,7 +42,20 @@ export function PointerProvider({ children }) {
   const [roomLength, setRoomLength] = useState(def_funitures.room.length);
   const [roomHeight, setRoomHeight] = useState(def_funitures.room.height);
   const [roomDoor, setRoomDoor] = useState(def_funitures.room.door);
+  
+  const [wallType01, setWallType01] = useState({"type":"wall"});
+  const [wallMtl01, setWallMtl01] = useState(null);
+  const [wallType02, setWallType02] = useState({"type":"glasswall"});
+  const [wallMtl02, setWallMtl02] = useState(null);
+  const [floorMtl, setFloorMtl] = useState({"material":"granite_tile_02"});
+
   const [cart, setCart] = useState([]);
+
+  useEffect(()=>{
+    setWallMtl01(materials.find(el => el.material === "granular_concrete"));
+    setWallMtl02(materials.find(el => el.material === "granular_concrete"));
+    setFloorMtl(materials.find(el => el.material ==="laminate_floor_02"));
+  },[materials]);
 
   const getResult = () => {
     const i = addedHighlights.findIndex(item => item.data.type === "bed");
@@ -257,6 +270,11 @@ export function PointerProvider({ children }) {
         rotateLeft, rotateRight, 
         roomDoor, setRoomDoor,
         cart, setCart,
+        wallType01, setWallType01,
+        wallMtl01, setWallMtl01,
+        wallType02, setWallType02,
+        wallMtl02, setWallMtl02,
+        floorMtl, setFloorMtl,
         positionPointer, setPointerIdRotationIndex }}>
       {children}
     </PointerContext.Provider>

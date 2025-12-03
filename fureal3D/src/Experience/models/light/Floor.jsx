@@ -59,7 +59,7 @@ const glossyAluminumMaterial = new THREE.MeshPhysicalMaterial({
 });
 
 export default function Model(props) {
-  
+  const { mtl, ...rest } = props;
   // const { nodes, materials, scene } = useGLTF('/models/NewRoom/NewRoom.glb');
   // const lightMap = useTexture('/models/NewRoom/lightmap.png');
   // const { nodes, materials, scene } = useGLTF('/models/Light Room/dining_room-transformed.glb');

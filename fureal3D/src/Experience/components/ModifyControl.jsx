@@ -1,10 +1,16 @@
 import * as THREE from "three";
 import { useSelection, usePointer } from "../../stores/selectionStore";
-import React, { useRef, useEffect, useState } from "react";
+
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { notification } from "antd";
 import PointSliderWithRotation from "../PointSliderWithRotation";
+import { Modal, Select, Button, Row, Col, Form, Space } from 'antd';
 import rules from "../rules.json";
 import Draggable from 'react-draggable';
+import { CloseOutlined } from '@ant-design/icons';
+import materials from "../../json/materials.json";
+
+const { Option } = Select;
 
 const btnStyle = { width: 60, height: 60, 
   fontSize:12, cursor:'pointer',
@@ -20,7 +26,7 @@ function ModifyControls() {
 
   useEffect(()=> {loadJson()},[]);
   const [api, contextHolder] = notification.useNotification();
-
+  const [isRoomStyleVisible, setRoomStyleVisible] = useState(false);
 
   const rotateCW = () => {
     // setRotationIndex((prev) => (prev + 1) % 4);
@@ -59,6 +65,10 @@ function ModifyControls() {
     deletePointerId(currentSelection);
   }
 
+  const handleSave = (values) => {
+    console.log('Saved:', values); // { wall1: 'walnut_wood', wall2: 'oak_wood', floor: 'white_marble' }
+  };
+
   const actions = [
     {handleSelectMode, label: "Chọn", color: "#d4af37" },
     { label: "Xoay 90", color: "#228B22" },
@@ -86,49 +96,46 @@ function ModifyControls() {
         </p>)}
       </div> */}
 
+      
+
       <div style={{ display: 'flex', flexDirection: 'column', padding:20}}>
 
           <div style={{ display: 'flex', flexDirection: 'row', gap:5}}>
       
-          <button style={btnStyle} onClick={() => handleSelectMode()}>
+          <button style={btnStyle} onClick={() => setRoomStyleVisible(true)}>
             <img src="/images/select.png" style={imgStyle} alt="Rotation" />
-            <p>Chọn</p>
+            <p>Room Style</p>
           </button>
 
           <button style={btnStyle} onClick={() => rotateCW()}>
             <img src="/images/rotation-icon-left.png" style={imgStyle} alt="Rotation" />
-            <p>Xoay 90</p>
+            <p>Rotate 90 CW</p>
           </button>
 
           <button style={btnStyle} onClick={() => rotateCCW()}>
             <img src="/images/rotation-icon.png" style={imgStyle} alt="Rotation-Left" />
-            <p>Xoay 90</p>
+            <p>Rotate 90 CCW</p>
           </button>
 
           <button style={btnStyle} onClick={saveJson}>
             <img src="/images/save.png" style={imgStyle} alt="Save"/><br/>
-            <p>Lưu</p>
+            <p>Save</p>
           </button>
 
           <button style={btnStyle} onClick={loadJson}>
             <img src="/images/load.png" style={imgStyle} alt="Load"/><br/>
-            <p>Tải data</p>
+            <p>Load</p>
           </button>
 
           <button style={btnStyle} onClick={() => handleDelete()}>
             <img src="/images/delete.png" style={imgStyle} alt="Save"/><br/>
-            <p>Xóa</p>
+            <p>Delete</p>
           </button>
           
         </div>
-        <span style={{fontSize:10, position:'relative', marginTop:10, whiteSpace:'nowrap'}}>
-            {currentSelection? `Đang chọn: [${currentSelection.split('-')[0]}] - Nhấp chuột phải để bỏ chọn`: ``}
-          </span>
-        <SimpleSlider/>
-        <PointSliderWithRotation/>
 
         <div style={{display:'flex', direction:'row', gap:10, marginTop: 20}}>
-          <p style={{whiteSpace:'nowrap', fontSize: 12}}>Kích thước phòng</p>
+          <p style={{whiteSpace:'nowrap', fontSize: 12}}>Room Size</p>
           <input style={{fontSize: 12, textAlign:'center'}}
             type="number"
             value={roomWidth}
@@ -157,10 +164,23 @@ function ModifyControls() {
           />
         </div>
 
+        <span style={{fontSize:10, position:'relative', marginTop:10, whiteSpace:'nowrap'}}>
+            {currentSelection? `Selection: [${currentSelection.split('-')[0]}] - Rightclick to clear selection`: ``}
+          </span>
+        <SimpleSlider/>
+        <PointSliderWithRotation/>
+
+        
       </div>
       
     </div>
     </Draggable>
+
+     <MaterialModal 
+        visible={isRoomStyleVisible}
+        onCancel={() => setRoomStyleVisible(false)}
+        onSave={handleSave}
+      />
     </>
   );
 }
@@ -342,3 +362,172 @@ export function FiveOptionToggle() {
     
   );
 }
+
+const MaterialModal = ({ visible, onCancel, onSave }) => {
+  const [form] = Form.useForm();
+  const {
+    wallType01, wallMtl01, wallType02, wallMtl02, floorMtl,
+    setWallType01, setWallMtl01,setWallType02, setWallMtl02, setFloorMtl} = usePointer();
+
+  // Sample data - thay bằng data thật của bạn
+  
+
+  const block_types = [{name: 'Wall', type: 'wall'},{name: 'GlassWall', type: 'glasswall'}];
+
+  const onFinish = (values) => {
+    console.log('Selected materials:', values);
+    onSave?.(values);  // Callback lưu data
+    onCancel();
+  };
+
+  const handleSave = useCallback((changedValues, allValues) => {
+    // console.log('Form changed:', changedValues, 'All values:', allValues);
+    console.log('👆 PARENT: Changing mtl S', wallMtl01, wallMtl02, 
+      materials.find(el => el.material === allValues.wallMtl01), 
+      materials.find(el => el.material === allValues.wallMtl02),);
+
+    // if(allValues?.wallType01)
+      setWallType01(block_types.find(el => el.type === allValues?.wallType01));
+
+    // if(allValues?.wallMtl01)
+      setWallMtl01(materials.find(el => el.material === allValues?.wallMtl01));
+
+    // if(allValues?.wallType02)
+      setWallType02(block_types.find(el => el.type === allValues?.wallType02));
+
+    // if(allValues?.wallMtl02)
+      setWallMtl02(materials.find(el => el.material === allValues?.wallMtl02));
+
+    // if(allValues?.floorMtl)
+      setFloorMtl(materials.find(el => el.material === allValues?.floorMtl));
+
+    // console.log("Variables", wallType01, wallType02);
+    
+    onSave?.(allValues);
+  }, [setWallType01, setWallMtl01, setWallType02, setWallMtl02, setFloorMtl, onSave]);
+
+  useEffect(() => {
+    if (visible) {
+      form.resetFields();
+
+      
+
+      form.setFieldsValue({
+        wallType01:wallType01?.type,
+        wallMtl01:wallMtl01?.material,
+        wallType02:wallType02?.type, 
+        wallMtl02:wallMtl02?.material,
+        floorMtl:floorMtl?.material,
+      });
+    }
+  }, [visible, form]);
+
+  const WALL_CONFIGS = [
+    {
+      name: 'Wall 1',
+      typeField: 'wallType01',
+      mtlField: 'wallMtl01',
+      typeState: wallType01,
+      setType: setWallType01,
+      setMtl: setWallMtl01
+    },
+    {
+      name: 'Wall 2', 
+      typeField: 'wallType02',
+      mtlField: 'wallMtl02',
+      typeState: wallType02,
+      setType: setWallType02,
+      setMtl: setWallMtl02
+    }
+  ];
+
+
+  return (
+    <Modal
+      title="Click to select material"
+      open={visible}
+      onCancel={onCancel}
+      footer={[
+        <Button key="cancel" onClick={onCancel}>
+          Hủy
+        </Button>,
+        <Button key="save" type="primary" onClick={() => form.submit()}>
+          Lưu
+        </Button>
+      ]}
+      width={600}
+      closeIcon={<CloseOutlined />}
+    >
+      <Form form={form} layout="vertical" 
+        onFinish={onFinish} onValuesChange={handleSave}>
+        <Row gutter={[16, 16]}>
+          {/* Wall 1 */}
+          {WALL_CONFIGS.map((config, index) => (
+            <Col span={24} key={config.name}>
+              <Space direction="horizontal">
+                {/* Type Select */}
+                <Form.Item 
+                  name={config.typeField} 
+                  label={`${config.name}`} 
+                  rules={[{ required: true, message: 'Click to select type!' }]}
+                >
+                  <Select placeholder={`Select type ${config.name}`} allowClear style={{width:200, height: 80}}>
+                    {block_types.map(item => (
+                      <Option key={item.type} value={item.type}>
+                        {item.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+                
+                {config.typeState?.type !== "glasswall"  &&
+                <Form.Item 
+                  name={config.mtlField} 
+                  label="Material" 
+                  rules={[{ required: true, message: 'Click to select material!' }]}
+                >
+                  <Select 
+                    placeholder={`Click to select material ${config.name}`} 
+                    allowClear 
+                    style={{width:300, height: 80}}
+                  >
+                    {materials.map(item => (
+                      <Option key={item.material} value={item.material} style={{height:80}}>
+                        <Space>
+                          <img src={`${item?.map}`} style={{width:80, height: 80}}/>
+                          {item.name}
+                        </Space>
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>}
+              </Space>
+            </Col>
+          ))}
+
+
+          {/* Floor */}
+          <Col span={24}>
+            <Form.Item 
+              name="floorMtl" 
+              label="Floor" 
+              rules={[{ required: true, message: 'Click to select material!' }]}
+            >
+              <Select placeholder="Click to select material Floor" allowClear style={{maxWidth:400, height: 80}}>
+                {materials.map(item => (
+                  <Option key={item.material} value={item.material} style={{height:80}}>
+                    <Space>
+                      <img src={`${item?.map}`} style={{width:80, height: 80}}/>
+                      {item.name}
+                    </Space>
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
+    </Modal>
+  );
+};
+

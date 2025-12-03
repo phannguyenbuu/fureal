@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState, useMemo } from "react";
 import { useGLTF, useTexture  } from "@react-three/drei";
 import { convertMaterialsToBasic } from "../../utils/convertToBasic";
 import * as THREE from 'three';
@@ -14,7 +14,8 @@ import Curtain from "./Curtain.jsx";
 export default function Model({ ...props }) {
   const lightRefs = useRef([]);
   const targetRefs = useRef([]);
-  const {roomWidth, roomLength, roomHeight, roomDoor, setRoomDoor} = usePointer();
+  const {wallType01, wallType02, wallMtl01, wallMtl02, floorMtl,
+    roomWidth, roomLength, roomHeight, roomDoor, setRoomDoor} = usePointer();
     const [doorInfor, setRoomInfor] = useState({x:0,z:0,r:0});
   const subw = 1.28;
 
@@ -78,19 +79,61 @@ export default function Model({ ...props }) {
       }
     });
   }, [roomWidth, roomLength]);
-  
+
+
+  const wallObjects1 = useMemo(() => (
+    <group>
+      <Curtain 
+        key="curtain-01"  uniqueKey="curtain-01"
+        position={[-roomLength / 2, 0, 0]} 
+        rotation={[0, Math.PI / 2, 0]} 
+        scale={[roomWidth / 5, 1, 1]} 
+        visible={wallType01?.type === "glasswall"}
+        
+      />
+      <Wall uvs = {[roomWidth,1,roomHeight]}
+        key="wall-01" 
+        width={5} height={3.6} length={0.2}
+        position={[-roomLength / 2, 0, 0]} 
+        rotation={[0, Math.PI / 2, 0]} 
+        scale={[roomWidth / 5, 1, 1]} 
+        visible={wallType01?.type !== "glasswall"}
+        mtl = {wallMtl01}
+      />
+    </group>
+  ), [wallMtl01, wallType01?.type, roomWidth, roomHeight, roomLength]);
+
+  const wallObjects2 = useMemo(() => (
+    <group>
+      <Curtain 
+        key="curtain-02"  uniqueKey="curtain-02"
+        position={[0, 0, -roomWidth / 2]} 
+        scale={[roomLength/ 5,1,1]} 
+        visible={wallType02?.type === "glasswall"}
+      />
+      <Wall uvs = {[roomWidth,1,roomHeight]}
+        key="wall-02" 
+        width={5} height={3.6} length={0.2}
+        position={[0, 0, -roomWidth / 2]} 
+        scale={[roomLength/ 5,1,1]} 
+        visible={wallType02?.type !== "glasswall"}
+        mtl = {wallMtl02}
+      />
+    </group>
+  ), [wallMtl02, wallType02?.type, roomWidth, roomLength, roomHeight]);  // ✅ Dependencies cụ thể
+
+  const floorObject = useMemo(() => (
+    <Wall uvs = {[roomHeight,roomWidth,roomLength]}
+            width={roomLength} height={0.2} length={roomWidth}
+          position={[0, -0.2, 0]} mtl = {floorMtl}/>
+  ),[floorMtl, roomWidth, roomLength, roomHeight]);
+
   return (
     <group {...props}>
-      <Curtain position={[0, 0, -roomWidth / 2 + 0.2 * roomWidth/5]} scale={[roomLength/ 3.2,1,1]}/>
-      {/* <Wall key="Wall-0" position={[-roomLength / 2 + subw * 0.1 + 0.5, 0, -roomWidth / 2 + 0.1]} 
-        scale={[subw * roomWidth / 20, roomHeight / 3.6, roomLength / 5]} />
-      <Wall key="Wall-1" position={[-(-roomLength / 2 + subw * 0.1 + 0.5), 0, -roomWidth / 2 + 0.1]} 
-        scale={[subw * roomWidth / 20, roomHeight / 3.6, roomLength / 5]} /> */}
-
-      <Wall key="Wall-2" position={[-roomLength / 2, 0, 0]} 
-        rotation={[0, -Math.PI / 2, 0]} 
-        scale={[roomWidth / 5, roomHeight / 3.6, roomLength / 5]} />
-      <Floor position={[0, 0, 0]} scale={[roomLength / 5, 0, roomWidth / 5]} />
+      {wallObjects2}
+      {wallObjects1}
+      {floorObject}
+      
       <Door position={[doorInfor.x, 0, doorInfor.z]} 
         rotation={[0, doorInfor.r, 0]} scale={[-1, 1, 1]} />
 
