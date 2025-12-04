@@ -50,33 +50,14 @@ server {
         proxy_cache_bypass $http_upgrade;
     }
 
-    # ✅ REPLACE location /creative/ hiện tại bằng:
-    location /creative/ {
-        proxy_pass http://127.0.0.1:5173/;
-        
-        # WebSocket HMR
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        
-        # ✅ FORCE JS MIME TYPE - QUAN TRỌNG!
-        location ~* \.js$ {
-            proxy_pass http://127.0.0.1:5173;
-            add_header Content-Type "application/javascript;charset=utf-8" always;
-            add_header Content-Encoding "";  # Clear encoding issues
-            proxy_hide_header Content-Type;   # Remove Vite's wrong MIME
-        }
-        
-        location ~* \.css$ {
-            proxy_pass http://127.0.0.1:5173;
-            add_header Content-Type "text/css;charset=utf-8" always;
-            proxy_hide_header Content-Type;
+    location /fureal3D/ {
+        alias /root/fureal/fureal3D/dist/;  # ✅ Phải chỉ đến dist/
+        index index.html;
+        try_files $uri $uri/ /fureal3D/index.html;  # ✅ Fallback ĐÚNG path
+
+        location ~* \.(js|css|png|jpg|jpeg|gif|svg|woff2?|ttf|json)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
         }
     }
-
-
-
-
 }
