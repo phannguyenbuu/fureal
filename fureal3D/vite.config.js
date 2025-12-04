@@ -1,16 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
-  base: '/fureal3D/',  // ✅ BẮT BUỘC! Match nginx prefix
-  plugins: [react()], 
+  plugins: [react()],
+  base: '/',  // ✅ DEV = base: '/' (KHÔNG dùng /fureal3D/)
   server: {
     host: '0.0.0.0',
     port: 5173,
-    hmr: {
-      host: true,
-      port: 5173
-    }
   }
 })
