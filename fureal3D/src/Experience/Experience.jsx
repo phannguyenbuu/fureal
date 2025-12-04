@@ -220,7 +220,9 @@ const Experience = () => {
     <>
     {contextHolder}
       <Canvas style={{ position: "fixed", zIndex: 1, top: 0, left: 0 }} shadows gl={{ preserveDrawingBuffer: true }}>
-        <Environment environmentIntensity={1}/>
+        <Environment files="/models/NewRoom/512_martigny_square_overcast.hdr" 
+          background={false}
+          environmentIntensity={1}/>
         
         
         <OrthographicCamera
