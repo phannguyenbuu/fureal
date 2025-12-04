@@ -58,10 +58,18 @@ server {
         try_files $uri $uri/ /creative/index.html;
 
         # Cache các file static tĩnh
-        location ~* \.(js|css|png|jpg|jpeg|gif|svg|woff2?|ttf|json|wasm|ico)$ {
+        location ~* \.(js|css|png|jpg|jpeg|gif|svg|woff2?|ttf|json|wasm|glb|hdr|ico)$ {
             expires 1y;
             add_header Cache-Control "public, immutable";
             access_log off;
         }
+    }
+
+    location /models/ {
+        alias /var/www/html/creative/models/;  # Models riêng
+    }
+
+    location /images/ {
+        alias /var/www/html/creative/images/;  # Models riêng
     }
 }

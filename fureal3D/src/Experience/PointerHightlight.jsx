@@ -18,8 +18,7 @@ const PointerHighlight = React.forwardRef(({data, isMoving, setMovingId, isSelec
   const {addedHighlights, setAddedHighlights, setMessage} = usePointer();
   // console.log('model', data);
   const model = data.modelFile ? useGLTF(data.modelFile) : null;
-  // const decalTexture = useTexture('/models/Light Room/shadow-circle.png');
-
+  
   const onClickHighlight = () => {
     if (isMoving) {
       setMovingId(null);    // dừng di chuyển nếu đang moving

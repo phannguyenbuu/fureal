@@ -1,18 +1,6 @@
 import React, { Suspense, useRef, useEffect } from "react";
 import * as THREE from "three";
 
-import DarkRoomFirst from "./models/dark/Dark_First";
-import DarkRoomSecond from "./models/dark/Dark_Second";
-import DarkRoomThird from "./models/dark/Dark_Third";
-import DarkRoomFourth from "./models/dark/Dark_Fourth";
-import LightRoomFirst from "./models/light/Light_First";
-import LightRoomSecond from "./models/light/Light_Second";
-import LightRoomThird from "./models/light/Light_Third";
-import LightRoomFourth from "./models/light/Light_Fourth";
-import DarkTargets from "./models/dark/Dark_Targets";
-import LightTargets from "./models/light/Light_Targets";
-
-
 
 import CustomRoom from "./models/light/CustomRoom.jsx";
 
