@@ -50,14 +50,18 @@ server {
         proxy_cache_bypass $http_upgrade;
     }
 
-    location /fureal3D/ {
-        alias /root/fureal/fureal3D/dist/;  # ✅ Phải chỉ đến dist/
+    location /creative/ {
+        alias /var/www/html/creative/;  # trỏ đúng tới thư mục dist sau khi deploy
         index index.html;
-        try_files $uri $uri/ /fureal3D/index.html;  # ✅ Fallback ĐÚNG path
 
-        location ~* \.(js|css|png|jpg|jpeg|gif|svg|woff2?|ttf|json)$ {
+        # SPA fallback: với React Router hoặc Single Page App, fallback về index.html
+        try_files $uri $uri/ /creative/index.html;
+
+        # Cache các file static tĩnh
+        location ~* \.(js|css|png|jpg|jpeg|gif|svg|woff2?|ttf|json|wasm|ico)$ {
             expires 1y;
             add_header Cache-Control "public, immutable";
+            access_log off;
         }
     }
 }
