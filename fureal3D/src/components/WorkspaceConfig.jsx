@@ -6,7 +6,7 @@ import FiveOptionToggle from './FiveOptionToggle';
 import RoomDoorSlider from './RoomDoorSlider';
 import { RoomAxisSlider } from './ModifyControl';
 import RoomSizeSliders from './RoomSizeSliders';
-import { MinusOutlined, PlusOutlined, ExpandAltOutlined } from '@ant-design/icons';
+import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { useSelection } from '../stores/selectionStore';
 
 const WorkspaceConfig = () => {
@@ -111,29 +111,30 @@ const FengshuiPanel = () => {
   return (
     <div className={`panel panel-left-bottom ${isExpanded ? 'expanded' : 'collapsed'} ${showPanel ? 'show' : 'hide'}`}>
       {/* ✅ HEADER LUÔN Ở ĐẦU */}
-      <div className="panel-header">
-        <h3 style={{margin: 0}}>Fengshui</h3>
+      <Space direction='horizontal'>        <h3 style={{margin: 0}}>Fengshui</h3>
         <button className="expand-btn" onClick={toggleExpand}>
-          {isExpanded ? '−' : '+'}  {/* Unicode an toàn */}
+          {!isExpanded ? <CaretUpOutlined style={{fontSize: '16px'}} /> : <CaretDownOutlined style={{fontSize: '16px'}} />}
         </button>
-      </div>
+        </Space>
 
+      
       {/* ✅ TEXTAREA LÊN ĐẦU khi EXPANDED */}
       {isExpanded && (
-        <div style={{padding: '0 20px 12px'}}>
-          <textarea 
-            value={formatMessage(message)}
-            readOnly
-            style={{
-              width: '100%', height: '160px', 
-              fontSize: 14, padding: 12, borderRadius: 8,
-              border: '1px solid #d9d9d9', resize: 'none',
-              background: 'none',
-              lineHeight: '1.5'
-            }}
-            placeholder="Phong thủy analysis..."
-          />
-        </div>
+          <div style={{padding: '0 20px 12px'}}>
+            <textarea 
+              value={formatMessage(message)}
+              readOnly
+              style={{
+                width: '100%', height: '160px', 
+                fontSize: 14, 
+                border: 'none', 
+                resize: 'none',
+                background: 'none',
+                lineHeight: '1.5'
+              }}
+              placeholder="Phong thủy analysis..."
+            />
+          </div>
       )}
 
       {/* Controls - luôn hiện */}

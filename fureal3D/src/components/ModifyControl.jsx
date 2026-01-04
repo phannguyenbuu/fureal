@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { useSelection, usePointer } from "../stores/selectionStore";
 
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import { notification } from "antd";
+// import { notification } from "antd";
 import RoomDoorSlider from "./RoomDoorSlider";
 import { Modal, Select, Button, Row, Col, Form, Space } from 'antd';
 import Draggable from 'react-draggable';
@@ -21,7 +21,7 @@ function ModifyControls() {
   const imgStyle = { width: 30, height: 30 };
 
   useEffect(()=> {loadJson()},[]);
-  const [api, contextHolder] = notification.useNotification();
+  // const [api, contextHolder] = notification.useNotification();
   const [isRoomStyleVisible, setRoomStyleVisible] = useState(false);
 
   const rotateCW = () => {
@@ -38,16 +38,16 @@ function ModifyControls() {
     setMessage(getResult());
   };
 
-  useEffect(()=>{
-    if(!message) return;
+  // useEffect(()=>{
+  //   if(!message) return;
 
-    message.split('|').forEach(el => {
-      api.success({
-        message: el,
-      });
-    });
+  //   message.split('|').forEach(el => {
+  //     api.success({
+  //       message: el,
+  //     });
+  //   });
     
-  },[message]);
+  // },[message]);
 
   const handleSelectMode = () => {
     // api.success({
@@ -77,7 +77,7 @@ function ModifyControls() {
 
   return (
     <>
-    {contextHolder}
+    {/* {contextHolder} */}
     <Draggable nodeRef={nodeRef} handle=".drag-handle">
         
     <div ref={nodeRef} style={{position:'fixed', top:300, right:20}}>

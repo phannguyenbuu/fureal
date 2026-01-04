@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import rules from "../json/rules.json";
 import def_funitures from "../json/default.json";
-import { notification } from "antd";
 const SelectionContext = createContext();
 
 export function SelectionProvider({ children }) {

@@ -13,7 +13,7 @@ import { useResponsiveStore } from "../stores/useResponsiveStore";
 import { useExperienceStore } from "../stores/experienceStore";
 import { useThree } from "@react-three/fiber";
 
-import { Button, notification } from 'antd';
+import { Button } from 'antd';
 import bedroom_furnitures from "../json/bedroom.json";
 import living_furnitures from "../json/living.json";
 import RoomDoorSlider from "../components/RoomDoorSlider";
@@ -71,7 +71,7 @@ function NotificationContainer({ children }) {
 
 
 const Experience = () => {
-  const [api, contextHolder] = notification.useNotification();
+  // const [api, contextHolder] = notification.useNotification();
   const cameraRef = useRef();
   const pointerRef = useRef({ x: 0, y: 0 });
   const { isExperienceReady } = useExperienceStore();
@@ -219,7 +219,7 @@ const Experience = () => {
 
   return (
     <>
-    {contextHolder}
+    {/* {contextHolder} */}
       <Canvas style={{ position: "fixed", zIndex: 1, top: 0, left: 0 }} shadows gl={{ preserveDrawingBuffer: true }}>
         <Environment files="/models/NewRoom/512_martigny_square_overcast.hdr" 
           background={false}
@@ -250,7 +250,7 @@ const Experience = () => {
         <SaveScreenshotButton capture={capture} setCapture={setCapture}/>
       </Canvas>
 
-      <NotificationContainer/>
+      {/* <NotificationContainer/> */}
 
       <WorkspaceConfig/>
 

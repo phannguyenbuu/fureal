@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { useSelection, usePointer } from "../stores/selectionStore";
 
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import { notification } from "antd";
+// import { notification } from "antd";
 import RoomDoorSlider from "./RoomDoorSlider";
 import { Modal, Select, Button, Row, Col, Form, Space } from 'antd';
 import rules from "../json/rules.json";
