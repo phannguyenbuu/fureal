@@ -1,0 +1,9 @@
+.material-swatch:hover {
+  transform: scale(1.05) !important;
+  border-color: #ff4d4d !important;
+  box-shadow: 0 6px 20px rgba(255,77,77,0.4) !important;
+}
+
+.dropdown-item:hover, .mtl-item:hover {
+  background: #f0f0f0 !important;
+}

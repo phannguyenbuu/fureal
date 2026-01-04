@@ -1,29 +1,6 @@
-import * as THREE from "three";
-import { useSelection, usePointer } from "../stores/selectionStore";
 import React, { useRef, useEffect, useState } from "react";
-import gsap from "gsap";
-import Scene from "./Scene";
-import { Canvas } from "@react-three/fiber";
-import { Html } from '@react-three/drei';
-import { OrthographicCamera, Box, OrbitControls} from "@react-three/drei";
-import { Environment } from '@react-three/drei';
-
-import { useToggleRoomStore } from "../stores/toggleRoomStore";
-import { useResponsiveStore } from "../stores/useResponsiveStore";
-import { useExperienceStore } from "../stores/experienceStore";
-import { useThree } from "@react-three/fiber";
-
-import { Button, notification } from 'antd';
-import bedroom_furnitures from "./bedroom.json";
-import living_furnitures from "./living.json";
-import PointSliderWithRotation from "./PointSliderWithRotation";
-import { createPortal } from 'react-dom';
-import ReactDOM from 'react-dom';
-
-import ModifyControls from "./components/ModifyControl";
-import PanelFurnitures from "./PanelFurnitures";
+import PanelFurnitures from "../components/PanelFurnitures";
 import { Modal, Tabs } from 'antd';
-import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
 
 const { TabPane } = Tabs;
 

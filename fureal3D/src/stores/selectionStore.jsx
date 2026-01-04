@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import rules from "../Experience/rules.json";
-import def_funitures from "./default.json";
+import rules from "../json/rules.json";
+import def_funitures from "../json/default.json";
 import { notification } from "antd";
 const SelectionContext = createContext();
 
@@ -28,6 +28,8 @@ export function useSelection() {
 const PointerContext = createContext();
 
 import materials from "../json/materials.json";
+
+console.log("DEF", def_funitures);
 
 export function PointerProvider({ children }) {
   
@@ -142,7 +144,7 @@ export function PointerProvider({ children }) {
   
         const result = await response.json();
         // setMessage({message:`Tải dữ liệu thành công`});
-        console.log('Load API', result);
+        // console.log('Load API', result);
 
         setAddedHighlights(result.models);
         setRoomWidth(result.room.width);

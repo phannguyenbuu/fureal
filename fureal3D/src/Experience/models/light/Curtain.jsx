@@ -66,7 +66,7 @@ export default function Curtain({ uniqueKey = "curtain", ...props }) {
   // Gán lightmap cho từng mesh còn lại
   clonedScene.traverse((child) => {
     if (child.isMesh) {
-      console.log(child);
+      // console.log(child);
       if (child.name === 'export_sample_bedroom_Curtain') {
         // Tạo material mới bóng với độ bóng cao (glossy)
         child.material = glossyAluminumMaterial;

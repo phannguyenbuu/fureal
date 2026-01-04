@@ -5,7 +5,7 @@ import * as THREE from "three";
 import CustomRoom from "./models/light/CustomRoom.jsx";
 
 
-import GridPlanes from "./components/GridPlanes";
+import GridPlanes from "./GridPlanes.jsx";
 import DirectionArrow from "./models/light/DirectionArrow";
 import { useToggleRoomStore } from "../stores/toggleRoomStore";
 import { usePointer, useSelection } from "../stores/selectionStore";
