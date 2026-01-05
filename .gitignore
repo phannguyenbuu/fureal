@@ -5,6 +5,9 @@
 /fureal3D/node_modules
 /fureal3D/package-lock.json
 /code3dexekhaipoy/build
+/static
+fureal3D/src/Experience/models
+public.zip
 boxroom.glb
 clipboard_handle.py
 full_backup_admake.sh

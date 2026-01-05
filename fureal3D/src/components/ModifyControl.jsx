@@ -9,7 +9,7 @@ import Draggable from 'react-draggable';
 
 const { Option } = Select;
 
-const btnStyle = { width: 160, height: 60, background:'rgba(255,255,255,0.75)', display:'flex', 
+const btnStyle = { width: 60, height: 60, background:'rgba(255,255,255,0.75)', display:'flex', 
   flexDirection:'row', fontSize:12, cursor:'pointer', whiteSpace:'nowrap'};
 
 
@@ -94,12 +94,12 @@ function ModifyControls() {
 
           <button style={btnStyle} onClick={() => rotateCW()}>
             <img src="/images/rotation-icon-left.png" style={imgStyle} alt="Rotation" />
-            <p>Rotate 90 CW</p>
+            {/* <p>Rotate 90 CW</p> */}
           </button>
 
           <button style={btnStyle} onClick={() => rotateCCW()}>
             <img src="/images/rotation-icon.png" style={imgStyle} alt="Rotation-Left" />
-            <p>Rotate 90 CCW</p>
+            {/* <p>Rotate 90 CCW</p> */}
           </button>
 
           {/* <button style={btnStyle} onClick={saveJson}>
@@ -119,7 +119,7 @@ function ModifyControls() {
 
           <button style={btnStyle} onClick={() => handleDelete()}>
             <img src="/images/delete.png" style={imgStyle} alt="Delete"/><br/>
-            <p>Delete</p>
+            {/* <p>Delete</p> */}
           </button>
         
 

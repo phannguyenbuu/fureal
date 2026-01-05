@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import rules from "../json/rules.json";
+import rules from "../json/fengshui.json";
 import def_funitures from "../json/default.json";
 const SelectionContext = createContext();
 
@@ -8,12 +8,14 @@ export function SelectionProvider({ children }) {
   const [currentSelection, setCurrentSelection] = useState(null);
   
   const [message, setMessage] = useState('');
+
+  const toVN = (n) => n.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   
   return (
     <SelectionContext.Provider value={{ 
       currentLibNodeSelection, setCurrentLibNodeSelection, 
       currentSelection, setCurrentSelection,
-      message, setMessage
+      message, setMessage, toVN
      }}>
       {children}
     </SelectionContext.Provider>

@@ -4,8 +4,8 @@ import React, { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import Scene from "./Scene";
 import { Canvas } from "@react-three/fiber";
-import { Html } from '@react-three/drei';
-import { OrthographicCamera, Box, OrbitControls} from "@react-three/drei";
+// import { Html } from '@react-three/drei';
+import { PerspectiveCamera,OrthographicCamera, Box, OrbitControls} from "@react-three/drei";
 import { Environment } from '@react-three/drei';
 
 import { useToggleRoomStore } from "../stores/toggleRoomStore";
@@ -13,16 +13,16 @@ import { useResponsiveStore } from "../stores/useResponsiveStore";
 import { useExperienceStore } from "../stores/experienceStore";
 import { useThree } from "@react-three/fiber";
 
-import { Button } from 'antd';
-import bedroom_furnitures from "../json/bedroom.json";
-import living_furnitures from "../json/living.json";
-import RoomDoorSlider from "../components/RoomDoorSlider";
-import { createPortal } from 'react-dom';
+// import { Button } from 'antd';
+// import bedroom_furnitures from "../json/bedroom.json";
+// import living_furnitures from "../json/living.json";
+// import RoomDoorSlider from "../components/RoomDoorSlider";
+// import { createPortal } from 'react-dom';
 import ReactDOM from 'react-dom';
 
 import ModifyControls from "../components/ModifyControl";
 
-import FurnitureModal from "./FunitureModal";
+// import FurnitureModal from "./FunitureModal";
 import WorkspaceConfig from "../components/WorkspaceConfig";
 
 const isMB = () => {
@@ -226,15 +226,15 @@ const Experience = () => {
           environmentIntensity={1}/>
         
         
-        <OrthographicCamera
-          ref={cameraRef}
+        <PerspectiveCamera
           makeDefault
-          position={cameraPositions.dark.position}
-          rotation={[
-            -0.6, -0.7, -0.4,
-          ]}
-          zoom={zoomValues.default}
+          position={[10, 6, 6]}     // X=8 (right), Y=6 (eye level), Z=8 (behind)
+          rotation={[-0.4, -0.9, 0]}  // Pitch=-0.4 (nhìn xuống), Yaw=-0.8 (nhìn trái), Roll=0
+          fov={55}                 // Góc nhìn tự nhiên
+          near={0.1}
+          far={1000}
         />
+
         
         <OrbitControls/>
         <Scene
@@ -252,20 +252,22 @@ const Experience = () => {
 
       {/* <NotificationContainer/> */}
 
+      <div style={{ position: 'fixed', left: 20,  top: 200,
+           color: 'black', zIndex:9 }}>
+        <ModifyControls setCapture={setCapture}/>
+      </div>
+
       <WorkspaceConfig/>
 
-      <FurnitureModal 
+      {/* <FurnitureModal 
         bedroom_furnitures={bedroom_furnitures}
         living_furnitures={living_furnitures}
         addedHighlights={addedHighlights}
         groupFurnitures={groupFurnitures}
         isMB={isMB}
-      />
+      /> */}
 
-      <div style={{ position: 'fixed', left: 20,  top: 200,
-           color: 'black', zIndex:99 }}>
-          <ModifyControls setCapture={setCapture}/>
-      </div>
+     
     </>
   );
 };

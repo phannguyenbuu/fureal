@@ -5,7 +5,7 @@ import { convertMaterialsToBasic } from "../../utils/convertToBasic";
 
 export default function Model(props) {
   const { nodes, materials } = useGLTF("/models/Light Room/obj/direction.glb");
-  const grayMaterial = new THREE.MeshStandardMaterial({ color: 'gray' });
+  const grayMaterial = new THREE.MeshStandardMaterial({ color: '#fff' });
 
   return (
     <group {...props} dispose={null}>

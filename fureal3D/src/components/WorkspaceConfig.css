@@ -163,7 +163,7 @@ button {
   bottom: 40px;
   left: calc(50% - 200px);
   /* transform: translateX(-50%); */
-  width: 400px;
+  width: 420px;
   height: 180px;
 }
 
@@ -196,7 +196,7 @@ button {
 }
 
 .panel.panel-left-bottom.expanded {
-  width: 50vw !important;
+  width: 36vw !important;
   height: 50vh !important;
   max-width: 800px;
   max-height: 600px;

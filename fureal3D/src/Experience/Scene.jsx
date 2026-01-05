@@ -66,7 +66,7 @@ const Scene = ({ pointerRef }) => {
     <>
       <Suspense>
         <CustomRoom position={[2.5,0,-2]} w={8} h={3.6} l={6}/>
-        <DirectionArrow position={[2.5,0,-2]} scale={[2.5,1,2.5]} 
+        <DirectionArrow position={[2.5,0,-2]} scale={[0.005,0.005,0.005]} 
             rotation={[0,directionAxis/180 * Math.PI,0]}/>
 
         <group ref={lightGroupRef} position={lightRoomGroupPosition}>

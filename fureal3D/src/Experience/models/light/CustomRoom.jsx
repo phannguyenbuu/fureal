@@ -108,7 +108,7 @@ export default function Model({ ...props }) {
       <Curtain 
         key="curtain-02"  uniqueKey="curtain-02"
         position={[0, 0, -roomWidth / 2]} 
-        scale={[roomLength/ 5,1,1]} 
+        scale={[roomLength/ 4.5,1,1]} 
         visible={wallType02?.type === "glasswall"}
       />
       <Wall uvs = {[roomWidth,1,roomHeight]}
@@ -125,6 +125,7 @@ export default function Model({ ...props }) {
   const floorObject = useMemo(() => (
     <Wall uvs = {[roomHeight,roomWidth,roomLength]}
             width={roomLength} height={0.2} length={roomWidth}
+             scale={[roomLength/ 6,1,roomWidth/ 6.8]} 
           position={[0, -0.2, 0]} mtl = {floorMtl}/>
   ),[floorMtl, roomWidth, roomLength, roomHeight]);
 

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import './WorkspaceConfig.css';
 import { Space } from 'antd';
 import MaterialPanel from './MaterialPanel';
@@ -7,79 +7,137 @@ import RoomDoorSlider from './RoomDoorSlider';
 import { RoomAxisSlider } from './ModifyControl';
 import RoomSizeSliders from './RoomSizeSliders';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
-import { useSelection } from '../stores/selectionStore';
+import { useSelection, usePointer } from '../stores/selectionStore';
+import CartInUsePanel from './CartInUse';
+import ModelSelectSwatch from './ModelSelectSwatch';
+import libraryData from "../json/modelLibrary.json"; // ✅ JSON config rooms
 
 const WorkspaceConfig = () => {
+  const { message } = useSelection();
+  const { addedHighlights, setAddedHighlights } = usePointer();
   
   const [isRoomStyleVisible, setRoomStyleVisible] = useState(false);
+  const [selectedModels, setSelectedModels] = useState({}); // {roomId: selectedModel}
+
   const handleSave = (values) => {
-    console.log('Saved:', values); // { wall1: 'walnut_wood', wall2: 'oak_wood', floor: 'white_marble' }
+    console.log('Saved:', values);
+  };
+
+  // ✅ Lấy config từ JSON
+  // Trong WorkspaceConfig
+  const [rooms, setRooms] = useState([]);
+
+
+
+
+  useEffect(() => {
+    const loadRooms = async () => {
+      const loadedRooms = await Promise.all(
+        libraryData.map(async (roomMeta) => {
+          // ✅ Dynamic import theo path
+          const modelsModule = await import(`../json/${roomMeta.path}`);
+          const rawModels = modelsModule.default || modelsModule;
+          
+          return {
+            ...roomMeta,
+            models: rawModels.map((model, i) => ({
+              id: `${roomMeta.activeRoom}_${i}`,
+              roomId: roomMeta.activeRoom,
+              ...model
+            }))
+          };
+        })
+      );
+      setRooms(loadedRooms);
+    };
+    
+    loadRooms();
+  }, []);
+
+
+
+
+  // const activeRoom = libraryData.activeRoom || 'living';
+
+  // Callback add furniture
+  const addFurniture = (model, roomId) => {
+    console.log(`Adding ${roomId} model:`, model);
+    setSelectedModels(prev => ({ ...prev, [roomId]: model }));
+    // Logic thêm vào scene/store
   };
 
   return (
     <div className="configurator-container">
-      {/* 3D Car Scene - User handles this */}
+      {/* 3D Scene */}
       <div className="car-3d-container">
-        {/* Your 3D scene goes here */}
+        {/* Your 3D scene */}
       </div>
 
-      {/* Top Left Panel */}
-      
-      {/* Left Bottom Panel */}
-      
-
+      {/* Top Left: RoomSize */}
       <div className="panel panel-top-left">
         <h3>RoomSize</h3>
         <Space direction='vertical'>
-          <div style={{marginTop:-40}}>
-            <RoomSizeSliders/>
+          <div style={{marginTop: -40}}>
+            <RoomSizeSliders />
           </div>
-          <div style={{marginTop:-30}}>
-            <RoomDoorSlider/>
+          <div style={{marginTop: -30}}>
+            <RoomDoorSlider />
           </div>
         </Space>
       </div>
-      
 
-      {/* Middle Bottom Panel */}
+      {/* Middle Bottom: Dynamic Room Swatches */}
       <div className="panel panel-middle-bottom">
         
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(6, 1fr)',  // 5 cột đều
+          gridTemplateRows: 'repeat(2, auto)',     // 2 hàng
+          gap: '6px',
+          justifyContent: 'center',
+          maxWidth: '800px',  // Giới hạn max width
+          margin: '0px auto', // Center + margin top
+          padding: '0 20px'
+        }}>
+          {rooms.map(room => (
+            <ModelSelectSwatch
+              key={room.id}
+              label={room.label}
+              models={room.models}
+              selectedModel={selectedModels[room.id]}
+              onSelectModel={(model) => addFurniture(model, room.id)}
+              gradient={room.gradient}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Top Right Panel */}
+      {/* Top Right: Cart */}
       <div className="panel panel-top-right">
         <div className="panel-content">
-          <h3>Price</h3>
-          <div className="price">$289,000</div>
+          <h3>Cart</h3>
+          <CartInUsePanel />
         </div>
       </div>
 
-      {/* Bottom Right Panel */}
+      {/* Bottom Right: Actions */}
       <div className="panel panel-bottom-right">
-        <div className="panel-content">
+        <Space direction='vertical'>
           <button className="save-btn">Save Config</button>
           <button className="share-btn">Share</button>
-        </div>
+        </Space>
       </div>
 
-      {/* Middle Top Panel */}
+      {/* Middle Top: Material */}
       <div className="panel panel-middle-top">
         <div className="panel-content">
           <h3>Room Material</h3>
-          
-          {/* <Space direction="vertical" size="middle" style={{ display: 'flex' }}> */}
-            
-            <MaterialPanel onCancel={() => setRoomStyleVisible(false)} onSave={handleSave}/>
-          {/* </Space> */}
-
+          <MaterialPanel onCancel={() => setRoomStyleVisible(false)} onSave={handleSave} />
         </div>
       </div>
 
-
-      <FengshuiPanel/>
+      <FengshuiPanel />
     </div>
-
-    
   );
 };
 
@@ -111,11 +169,13 @@ const FengshuiPanel = () => {
   return (
     <div className={`panel panel-left-bottom ${isExpanded ? 'expanded' : 'collapsed'} ${showPanel ? 'show' : 'hide'}`}>
       {/* ✅ HEADER LUÔN Ở ĐẦU */}
-      <Space direction='horizontal'>        <h3 style={{margin: 0}}>Fengshui</h3>
+      <Space direction='horizontal'>        
+        
         <button className="expand-btn" onClick={toggleExpand}>
-          {!isExpanded ? <CaretUpOutlined style={{fontSize: '16px'}} /> : <CaretDownOutlined style={{fontSize: '16px'}} />}
+          {!isExpanded ? <CaretUpOutlined style={{fontSize: '30px'}} /> : <CaretDownOutlined style={{fontSize: '30px'}} />}
         </button>
-        </Space>
+        <h3 style={{margin: 0}}>Fengshui</h3>
+      </Space>
 
       
       {/* ✅ TEXTAREA LÊN ĐẦU khi EXPANDED */}

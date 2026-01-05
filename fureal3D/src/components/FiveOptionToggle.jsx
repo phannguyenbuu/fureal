@@ -5,7 +5,7 @@ import React, { useRef, useEffect, useState, useCallback } from "react";
 // import { notification } from "antd";
 import RoomDoorSlider from "./RoomDoorSlider";
 import { Modal, Select, Button, Row, Col, Form, Space } from 'antd';
-import rules from "../json/rules.json";
+import rules from "../json/fengshui.json";
 
 const { Option } = Select;
 
