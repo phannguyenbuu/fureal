@@ -8,6 +8,8 @@
 /static
 /fureal3D/src/Experience/node_modules
 /fureal3D/public/preview
+/fureal3D/dist/models
+/fureal3D/dist/preview
 public.zip
 boxroom.glb
 clipboard_handle.py

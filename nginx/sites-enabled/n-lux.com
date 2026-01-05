@@ -43,7 +43,7 @@ server {
 
 
     location /creative/ {
-        alias /var/www/html/creative/;  # trỏ đúng tới thư mục dist sau khi deploy
+        alias /root/fureal/fureal3D/dist/;  # trỏ đúng tới thư mục dist sau khi deploy
         index index.html;
 
         # SPA fallback: với React Router hoặc Single Page App, fallback về index.html
@@ -58,12 +58,17 @@ server {
     }
 
     location /models/ {
-        alias /var/www/html/creative/models/;  # Models riêng
+        alias /root/fureal/fureal3D/public/models/;  # Models riêng
     }
 
     location /images/ {
-        alias /var/www/html/creative/images/;  # Models riêng
+        alias /root/fureal/fureal3D/public/images/;  # Models riêng
     }
+
+    location /preview/ {
+        alias /root/fureal/fureal3D/public/preview/;  # Models riêng
+    }
+
 
     
     location / {
