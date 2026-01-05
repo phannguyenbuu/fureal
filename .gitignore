@@ -6,7 +6,8 @@
 /fureal3D/package-lock.json
 /code3dexekhaipoy/build
 /static
-fureal3D/src/Experience/models
+/fureal3D/src/Experience/node_modules
+/fureal3D/public/preview
 public.zip
 boxroom.glb
 clipboard_handle.py
