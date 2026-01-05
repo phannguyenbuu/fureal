@@ -89,10 +89,10 @@
   },
   
   {
-    "activeRoom": "device", 
+    "activeRoom": "media", 
     "path": "TV_35.json",
-    "label": "device",
-    "shortLabel": "device",
+    "label": "media",
+    "shortLabel": "media",
     "icon": "/images/bed.svg",
     "gradient": "radial-gradient(circle at 30% 30%, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)"
   }
