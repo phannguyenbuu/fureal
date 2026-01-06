@@ -121,6 +121,7 @@ def save_json(filename):
         json.dump(data, f, indent=2, ensure_ascii=False)
 
     return {"status": "ok"}
+
 @app.route("/api/update/<path:filename>/<int:index>", methods=["POST"])
 def api_update(filename, index):
     path = os.path.join(JSON_DIR, filename)
@@ -132,6 +133,8 @@ def api_update(filename, index):
     try:
         payload = request.get_json(force=True)
 
+        print("OK1")
+        
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
@@ -141,6 +144,8 @@ def api_update(filename, index):
         data[index].update(payload)
 
         shutil.copy(path, path + ".bak")
+
+        print("OK2")
 
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
