@@ -1,0 +1,183 @@
+
+<div class="modal fade" id="materialModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Materials</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex gap-3">
+        <div id="glbPreview"></div>
+        <div id="materialList" class="flex-grow-1"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+    <!-- GLTF LOADER -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- ORBIT CONTROLS (optional preview) -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+
+
+
+<script>
+    let materials = []
+    let materialCatalog = []
+let currentModel = null
+
+let scene, camera, renderer, loader
+
+
+function renderMaterialRows(rows) {
+  const el = document.getElementById("materialList")
+  el.innerHTML = rows.map(renderMaterialRow).join("")
+}
+
+
+function loadGLBPreview(glbUrl) {
+  const container = document.getElementById("glbPreview")
+  container.innerHTML = ""
+
+  scene = new THREE.Scene()
+  scene.background = new THREE.Color(0xf5f5f5)
+
+  camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100)
+  camera.position.set(2, 2, 2)
+
+  renderer = new THREE.WebGLRenderer({ antialias: true })
+  renderer.setSize(300, 300)
+  container.appendChild(renderer.domElement)
+
+  const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1)
+  scene.add(light)
+
+  loader = new THREE.GLTFLoader()
+  loader.load(glbUrl, gltf => {
+    scene.add(gltf.scene)
+    animate()
+  })
+
+  const controls = new THREE.OrbitControls(camera, renderer.domElement)
+    controls.enableDamping = true
+
+}
+
+function animate() {
+    controls.update()
+
+  requestAnimationFrame(animate)
+  renderer.render(scene, camera)
+}
+function buildThreeMaterial(def) {
+  return new THREE.MeshStandardMaterial({
+    color: def.color || "#cccccc",
+    metalness: def.metalness ?? 0.2,
+    roughness: def.roughness ?? 0.8
+  })
+}
+
+
+
+function openModal() {
+  new bootstrap.Modal(
+    document.getElementById("materialModal")
+  ).show()
+}
+
+
+
+async function openMaterialModal(modelPath) {
+  currentModel = modelPath
+
+  // load model data
+  const model = await fetch(`/api/model/${modelPath}`).then(r => r.json())
+
+  // load material catalog (cache 1 lần)
+  if (!materialCatalog.length) {
+    materialCatalog = await fetch("/json/material.json").then(r => r.json())
+  }
+
+  renderMaterialRows(model.materials || [])
+  openModal()
+  loadGLBPreview(model.glb)
+}
+
+
+function renderMaterialRow(row, i) {
+  return `
+    <div class="d-flex gap-2 mb-2 align-items-center">
+      <input class="form-control" style="width:80px"
+             type="number" value="${row.index}"
+             onchange="updateIndex(${i}, this.value)" />
+
+      <select class="form-select"
+              onchange="updateMaterial(${i}, this.value)">
+        ${materialCatalog.map(m =>
+          `<option value="${m.material}"
+            ${m.material === row.material ? "selected" : ""}>
+            ${m.name}
+          </option>`
+        ).join("")}
+      </select>
+
+      <button class="btn btn-sm btn-danger"
+              onclick="removeMaterial(${i})">✕</button>
+    </div>
+  `
+}
+
+function addMaterial() {
+  materials.push({ index: 0, material: materialCatalog[0].material })
+  renderMaterialRows(materials)
+}
+
+async function saveMaterials() {
+  await fetch(`/api/model/${currentModel}/materials`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(materials)
+  })
+
+  antd.notification.success({
+    message: "Saved",
+    description: "Materials updated successfully",
+    duration: 3
+  })
+}
+
+
+function applyMaterials(gltf, materials) {
+  gltf.scene.traverse(obj => {
+    if (!obj.isMesh) return
+
+    materials.forEach(m => {
+      const matDef = materialCatalog.find(x => x.material === m.material)
+      if (!matDef) return
+
+      obj.material[m.index] = buildThreeMaterial(matDef)
+    })
+  })
+}
+
+
+function updateIndex(i, value) {
+  materials[i].index = parseInt(value)
+}
+
+function updateMaterial(i, value) {
+  materials[i].material = value
+}
+
+function removeMaterial(i) {
+  materials.splice(i, 1)
+  materials = model.materials || []
+renderMaterialRows(materials)
+
+}
+
+
+</script>

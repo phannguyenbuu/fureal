@@ -161,6 +161,31 @@ def api_update(filename, index):
     except Exception as e:
         print("❌ ERROR:", e, flush=True)
         return {"error": str(e)}, 500
+    
+
+@app.route("/api/model/<path:filename>/materials", methods=["POST"])
+def save_materials(filename):
+    path = os.path.join(JSON_DIR, "modelLibrary.json")
+
+    payload = request.json  # [{index, material}]
+
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+
+    for item in data:
+        if item["path"] == filename:
+            item["materials"] = payload
+            break
+
+    shutil.copy(path, path + ".bak")
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+    return {"ok": True}
+
+
+
 
 
 @app.route('/create_file', methods=['POST'])
