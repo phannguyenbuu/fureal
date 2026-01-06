@@ -34,7 +34,7 @@
                     {% if selected and item.path == selected.path %}active-file{% endif %}"
                     data-path="{{ item.path }}"
                     onclick="go('{{ item.shortLabel }}')"
-                    style="cursor:pointer; text-transform: capitalize;">
+                    style="cursor:pointer; text-transform: uppercase;">
                     {{ item.label }}
                 </li>
 
