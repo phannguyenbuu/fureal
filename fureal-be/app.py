@@ -121,33 +121,39 @@ def save_json(filename):
         json.dump(data, f, indent=2, ensure_ascii=False)
 
     return {"status": "ok"}
-
 @app.route("/api/update/<path:filename>/<int:index>", methods=["POST"])
 def api_update(filename, index):
     path = os.path.join(JSON_DIR, filename)
-
     print("Update", path, flush=True)
 
     if not os.path.exists(path):
         return {"error": "File not found"}, 404
 
-    payload = request.json
+    try:
+        payload = request.get_json(force=True)
 
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
 
-    if index < 0 or index >= len(data):
-        return {"error": "Invalid index"}, 400
+        if index < 0 or index >= len(data):
+            return {"error": "Invalid index"}, 400
 
-    data[index].update(payload)
+        data[index].update(payload)
 
-    # backup
-    shutil.copy(path, path + ".bak")
+        shutil.copy(path, path + ".bak")
 
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
 
-    return {"ok": True}
+        return {"ok": True}
+
+    except PermissionError as e:
+        print("❌ PERMISSION ERROR:", e, flush=True)
+        return {"error": "Permission denied"}, 403
+
+    except Exception as e:
+        print("❌ ERROR:", e, flush=True)
+        return {"error": str(e)}, 500
 
 
 @app.route('/create_file', methods=['POST'])
