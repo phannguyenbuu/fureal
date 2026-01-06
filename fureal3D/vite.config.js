@@ -4,5 +4,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => ({
   base: mode === 'production' ? '/creative/' : '/',  // ✅ Đổi từ '/fureal3D/' → '/creative/'
   plugins: [react()],
+  publicDir: false
 }))
 

@@ -28,15 +28,18 @@ const WorkspaceConfig = () => {
   const [rooms, setRooms] = useState([]);
 
 
-
+  const BASE_URL = 'https://n-lux.com/creative/json';
 
   useEffect(() => {
     const loadRooms = async () => {
       const loadedRooms = await Promise.all(
         libraryData.map(async (roomMeta) => {
-          // ✅ Dynamic import theo path
-          const modelsModule = await import(`../json/${roomMeta.path}`);
-          const rawModels = modelsModule.default || modelsModule;
+          // ✅ Dùng fetch thay dynamic import
+          const url = `${BASE_URL}/${roomMeta.path}`;
+          console.log('Fetching:', url);
+          
+          const response = await fetch(url);
+          const rawModels = await response.json();
           
           return {
             ...roomMeta,
@@ -53,6 +56,7 @@ const WorkspaceConfig = () => {
     
     loadRooms();
   }, []);
+
 
 
 

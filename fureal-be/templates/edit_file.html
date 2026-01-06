@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit {{ filename }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-4">
+    <h3>📝 {{ filename }} ({{ data|length }} items)</h3>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary mb-3">← Back</a>
+
+    <!-- ADD -->
+    <div class="card p-3 mb-3">
+        <h6>Add item</h6>
+        <div class="row g-2">
+            <input class="form-control col" placeholder="type" id="new_type">
+            <input class="form-control col" placeholder="file" id="new_file">
+            <input class="form-control col" placeholder="preview" id="new_preview">
+            <input class="form-control col" placeholder="name" id="new_name">
+            <input class="form-control col" placeholder="cost" type="number" id="new_cost">
+            <input class="form-control col" placeholder="color" id="new_color">
+        </div>
+        <button class="btn btn-success mt-2" onclick="addItem()">➕ Add</button>
+    </div>
+
+    <!-- TABLE -->
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>#</th><th>Type</th><th>Name</th><th>Cost</th><th>Actions</th>
+        </tr>
+        </thead>
+        
+        <tbody>
+        {% for item in data %}
+            {% set i = loop.index0 %}
+            <tr>
+                <td>{{ i }}</td>
+                <td>
+                    <input value="{{ item.type }}"
+                        class="form-control"
+                        onchange="update({{ i }}, 'type', this.value)">
+                </td>
+                <td>
+                    <input value="{{ item.name }}"
+                        class="form-control"
+                        onchange="update({{ i }}, 'name', this.value)">
+                </td>
+                <td>
+                    <input value="{{ item.cost }}"
+                        class="form-control"
+                        type="number"
+                        onchange="update({{ i }}, 'cost', this.value)">
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-danger"
+                            onclick="del({{ i }})">🗑</button>
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+<script>
+const filename = "{{ filename }}";
+
+function addItem() {
+    fetch(`/file/${filename}/add`, {
+        method: "POST",
+        body: new URLSearchParams({
+            type: new_type.value,
+            file: new_file.value,
+            preview: new_preview.value,
+            name: new_name.value,
+            cost: new_cost.value,
+            color: new_color.value,
+        })
+    }).then(() => location.reload());
+}
+
+function update(i, field, value) {
+    fetch(`/file/${filename}/update/${i}`, {
+        method: "POST",
+        body: new URLSearchParams({ [field]: value })
+    });
+}
+
+function del(i) {
+    if (!confirm("Delete item?")) return;
+    fetch(`/file/${filename}/delete/${i}`, { method: "POST" })
+        .then(() => location.reload());
+}
+</script>
+
+</body>
+</html>

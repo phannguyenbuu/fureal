@@ -41,35 +41,32 @@ server {
         proxy_cache_bypass $http_upgrade;
     }
 
+    location /creative/json/ {
+        alias /var/www/creative/json/;
+        try_files $uri $uri/ =404;
+        
+        # ✅ MIME JS - KHÔNG dùng nested/regex phức tạp
+        types { }
+        default_type application/javascript;
+        add_header Access-Control-Allow-Origin "*";
+    }
+
+
 
     location /creative/ {
-        alias /root/fureal/fureal3D/dist/;  # trỏ đúng tới thư mục dist sau khi deploy
+        alias /var/www/creative/;
         index index.html;
-
-        # SPA fallback: với React Router hoặc Single Page App, fallback về index.html
-        try_files $uri $uri/ /creative/index.html;
-
-        # Cache các file static tĩnh
-        location ~* \.(js|css|png|jpg|jpeg|gif|svg|woff2?|ttf|json|wasm|glb|hdr|ico)$ {
-            expires 1y;
-            add_header Cache-Control "public, immutable";
-            access_log off;
-        }
+        
+        # ✅ try_files ĐÚNG với alias
+        try_files $uri $uri/ /index.html;
+        
+        # ✅ Headers cho Vite/React
+        add_header Cache-Control "no-cache" always;
     }
 
-    location /models/ {
-        alias /root/fureal/fureal3D/public/models/;  # Models riêng
-    }
-
-    location /images/ {
-        alias /root/fureal/fureal3D/public/images/;  # Models riêng
-    }
-
-    location /preview/ {
-        alias /root/fureal/fureal3D/public/preview/;  # Models riêng
-    }
-
-
+    location /models/ { alias /var/www/creative/models/; }
+    location /images/ { alias /var/www/creative/images/; }
+    location /preview/ { alias /var/www/creative/preview/; }
     
     location / {
         proxy_pass http://127.0.0.1:3000/;
@@ -78,5 +75,11 @@ server {
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_cache_bypass $http_upgrade;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
     }
 }
