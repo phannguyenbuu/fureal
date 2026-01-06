@@ -13,17 +13,17 @@ app.secret_key = 'your-secret-key'  # Change this!
 CORS(app)
 
 
-@app.route("/")
-def index():
-    model_lib_path = os.path.join(JSON_DIR, "modelLibrary.json")
+# @app.route("/")
+# def index():
+#     model_lib_path = os.path.join(JSON_DIR, "modelLibrary.json")
 
-    with open(model_lib_path, "r", encoding="utf-8") as f:
-        model_library = json.load(f)
+#     with open(model_lib_path, "r", encoding="utf-8") as f:
+#         model_library = json.load(f)
 
-    return render_template(
-        "index.html",
-        model_library=model_library
-    )
+#     return render_template(
+#         "index.html",
+#         model_library=model_library
+#     )
 
 
 @app.route("/", defaults={"room": None})
