@@ -30,8 +30,11 @@
                 {% for item in model_library %}
                 <li class="list-group-item list-group-item-action
                     {% if selected and item.path == selected.path %}active-file{% endif %}"
-                    style="cursor:pointer; background: #ddd; text-transform: uppercase;"
-                    onclick="go('{{ item.shortLabel }}')">
+                    data-path="{{ item.path }}"
+                    onclick="go('{{ item.shortLabel }}')"
+                    style="cursor:pointer; text-transform: uppercase;">
+                    <strong>{{ item.label }}</strong>
+                </li>
 
                     
                     <strong>{{ item.label }}</strong>
@@ -162,15 +165,15 @@ function loadFile(filename) {
         .querySelectorAll(".list-group-item")
         .forEach(e => e.classList.remove("active-file"))
 
-    // add active
-    el.classList.add("active-file")
+    const el = document.querySelector(`[data-path="${filename}"]`)
+    if (el) el.classList.add("active-file")
 
     fetch(`https://www.n-lux.com/creative/json/${filename}`)
         .then(res => res.json())
         .then(data => {
             currentFile = filename
             currentData = data
-            currentPage = 1   // 🔥 reset
+            currentPage = 1
             document.getElementById("dataTable").style.display = ""
             renderTable()
         })
@@ -201,13 +204,16 @@ function delRow(i) {
 }
 
 window.onload = () => {
-    const first = document.querySelector(".list-group-item")
-    if (first) first.click()
+    const room = location.pathname.replace("/", "")
+    if (!room) return
+
+    const map = {{ model_library | tojson }}
+    const item = map.find(
+        x => x.shortLabel === room || x.activeRoom === room
+    )
+    if (item) loadFile(item.path)
 }
 
-{% if selected %}
-loadFile("{{ selected.path }}")
-{% endif %}
 
 </script>
 
