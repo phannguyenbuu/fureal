@@ -3,6 +3,17 @@
 <head>
     <title>JSON Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .list-group-item.active-file {
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+            color: #fff;
+            font-weight: 600;
+            border-color: #0d6efd;
+        }
+    </style>
+
+
 </head>
 
 <body class="bg-light">
@@ -62,6 +73,13 @@ let currentPage = 1
 const PAGE_SIZE = 20
 
 function loadFile(filename) {
+    document
+        .querySelectorAll(".list-group-item")
+        .forEach(e => e.classList.remove("active-file"))
+
+    // add active
+    el.classList.add("active-file")
+    
     fetch(`https://www.n-lux.com/creative/json/${filename}`)
         .then(res => res.json())
         .then(data => {

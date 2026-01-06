@@ -106,7 +106,7 @@ def save_json(filename):
 def api_update(filename, index):
     path = os.path.join(JSON_DIR, filename)
 
-    print("Update", path)
+    print("Update", path, flush=True)
 
     if not os.path.exists(path):
         return {"error": "File not found"}, 404
