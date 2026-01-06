@@ -26,6 +26,26 @@ def index():
     )
 
 
+@app.route("/", defaults={"room": None})
+@app.route("/<room>")
+def index(room):
+    with open("/var/www/creative/json/modelLibrary.json", encoding="utf-8") as f:
+        model_library = json.load(f)
+
+    selected = None
+    for item in model_library:
+        if item["shortLabel"] == room or item["activeRoom"] == room:
+            selected = item
+            break
+
+    return render_template(
+        "index.html",
+        model_library=model_library,
+        selected=selected
+    )
+
+
+
 @app.route('/file/<filename>')
 def view_file(filename):
     path = os.path.join(JSON_DIR, filename)
