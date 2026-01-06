@@ -165,7 +165,7 @@ function loadFile(filename) {
     const el = document.querySelector(`[data-path="${filename}"]`)
     if (el) el.classList.add("active-file")
 
-    fetch(`https://www.n-lux.com/creative/json/${filename}`)
+    fetch(`https://www.n-lux.com/creative/json/${filename}?t=${Date.now()}`)
         .then(res => res.json())
         .then(data => {
             currentFile = filename
