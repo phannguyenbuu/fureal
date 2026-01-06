@@ -63,6 +63,7 @@
                         <th>Type</th>
                         <th>Name</th>
                         <th>Cost</th>
+                        <th>Mtl</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -135,14 +136,15 @@ function renderTable() {
             <td><input type="number" class="form-control" value="${item.cost || 0}"
                 onchange="update(${i}, 'cost', this.value)"></td>
             <td>
-                <button class="btn btn-sm" onclick="delRow(${i})">🗑</button>
-            </td>
-            <td>
                 <button class="btn btn-sm btn-outline-secondary"
                     onclick="openMaterialModal(currentFile)">
 
                 </button>
             </td>
+            <td>
+                <button class="btn btn-sm" onclick="delRow(${i})">🗑</button>
+            </td>
+            
         </tr>
         `
     })
