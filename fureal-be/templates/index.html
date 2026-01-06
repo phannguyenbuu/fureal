@@ -33,12 +33,9 @@
                     data-path="{{ item.path }}"
                     onclick="go('{{ item.shortLabel }}')"
                     style="cursor:pointer; text-transform: uppercase;">
-                    <strong>{{ item.label }}</strong>
+                    {{ item.label }}
                 </li>
 
-                    
-                    <strong>{{ item.label }}</strong>
-                </li>
                 {% endfor %}
             </ul>
 
