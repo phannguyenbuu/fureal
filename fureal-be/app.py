@@ -32,6 +32,8 @@ def index(room):
     with open("/var/www/creative/json/modelLibrary.json", encoding="utf-8") as f:
         model_library = json.load(f)
 
+    model_library.sort(key=lambda x: x.get("label", "").lower())
+
     selected = None
     for item in model_library:
         if item["shortLabel"] == room or item["activeRoom"] == room:
@@ -134,7 +136,7 @@ def api_update(filename, index):
         payload = request.get_json(force=True)
 
         print("OK1")
-        
+
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
 

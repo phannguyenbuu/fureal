@@ -98,10 +98,6 @@ function go(room) {
 
 function loadByRoom(room) {
     const map = {{ model_library | tojson }}
-                .slice() // copy
-                .sort((a, b) => a.label.localeCompare(b.label, 'vi', { sensitivity: 'base' }))
-
-
     const item = map.find(
         x => x.shortLabel === room || x.activeRoom === room
     )
@@ -241,16 +237,6 @@ window.onload = () => {
 
 </script>
 
-<script>
-const notify = (type, message, description = "") => {
-    antd.notification[type]({
-        message,
-        description,
-        duration: 3,        // 👈 auto close sau 3s
-        placement: "bottomRight"
-    })
-}
-</script>
 
 
 </body>
