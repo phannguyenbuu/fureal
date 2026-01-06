@@ -43,7 +43,11 @@
 
         <!-- RIGHT PANEL -->
         <div class="col-9 p-4">
-            
+            <div id="loading" class="text-center my-5" style="display:none">
+                <div class="spinner-border text-primary" role="status"></div>
+                <div class="mt-2 text-muted">Loading data...</div>
+            </div>
+
 
             <table class="table table-bordered mt-3" id="dataTable" style="display:none">
                 <thead>
@@ -72,6 +76,16 @@ let currentFile = null
 
 let currentPage = 1
 const PAGE_SIZE = 20
+
+function showLoading() {
+    document.getElementById("loading").style.display = "block"
+    document.getElementById("dataTable").style.display = "none"
+}
+
+function hideLoading() {
+    document.getElementById("loading").style.display = "none"
+    document.getElementById("dataTable").style.display = ""
+}
 
 
 function go(room) {
@@ -165,14 +179,21 @@ function loadFile(filename) {
     const el = document.querySelector(`[data-path="${filename}"]`)
     if (el) el.classList.add("active-file")
 
+    showLoading()   // 👈 BẮT ĐẦU LOADING
+
     fetch(`https://www.n-lux.com/creative/json/${filename}?t=${Date.now()}`)
         .then(res => res.json())
         .then(data => {
             currentFile = filename
             currentData = data
             currentPage = 1
-            document.getElementById("dataTable").style.display = ""
+            hideLoading()   // 👈 LOAD XONG
             renderTable()
+        })
+        .catch(err => {
+            hideLoading()
+            alert("Load failed")
+            console.error(err)
         })
 }
 
