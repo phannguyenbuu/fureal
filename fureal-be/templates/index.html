@@ -32,7 +32,7 @@
                     {% if selected and item.path == selected.path %}active-file{% endif %}"
                     data-path="{{ item.path }}"
                     onclick="go('{{ item.shortLabel }}')"
-                    style="cursor:pointer; text-transform: uppercase;">
+                    style="cursor:pointer; text-transform: capitalize;">
                     {{ item.label }}
                 </li>
 
@@ -111,7 +111,7 @@ function renderTable() {
             <td><input type="number" class="form-control" value="${item.cost || 0}"
                 onchange="update(${i}, 'cost', this.value)"></td>
             <td>
-                <button class="btn btn-sm btn-danger" onclick="delRow(${i})">🗑</button>
+                <button class="btn btn-sm" onclick="delRow(${i})">🗑</button>
             </td>
         </tr>
         `
