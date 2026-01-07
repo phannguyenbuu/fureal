@@ -18,6 +18,14 @@
   z-index: 1;
 }
 
+.car-3d-container img {
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+.car-3d-container img:hover {
+  opacity: 0.8;
+}
+
 .panel,
 .panel * {
   pointer-events: auto !important;
@@ -143,14 +151,14 @@ button {
 .panel-top-left {
   top: 40px;
   left: 40px;
-  width: 220px;
+  width: 300px;
   height: 180px;
 }
 
 .panel-left-bottom {
   bottom: 40px;
   left: 40px;
-  width: 220px;
+  width: 300px;
   height: 180px;
 }
 
@@ -191,7 +199,7 @@ button {
 }
 
 .panel.panel-left-bottom.collapsed {
-  width: 220px;
+  width: 300px;
   height: 180px;
 }
 

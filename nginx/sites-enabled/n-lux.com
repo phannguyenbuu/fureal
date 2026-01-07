@@ -31,6 +31,15 @@ server {
         root /var/www/n-lux.com/html;
         allow all;
     }
+
+    location /admin/ {
+        proxy_pass http://31.97.76.62:5000/;  # ✅ Dùng IP public thay 127.0.0.1
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+    }
     
     location /view360/ {
         proxy_pass http://127.0.0.1:8000/;
@@ -51,7 +60,18 @@ server {
         add_header Access-Control-Allow-Origin "*";
     }
 
-
+    location / {
+        alias /var/www/nlux/;  # ✅ alias cho root
+        index index.html index.htm;
+        try_files $uri $uri/ /index.html;  # SPA fallback
+        
+        # Cache headers
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
+        add_header Cache-Control "no-cache" always;
+    }
 
     location /creative/ {
         alias /var/www/creative/;
@@ -68,18 +88,5 @@ server {
     location /images/ { alias /var/www/creative/images/; }
     location /preview/ { alias /var/www/creative/preview/; }
     
-    location / {
-        proxy_pass http://127.0.0.1:3000/;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-
-    location /api/ {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
+   
 }

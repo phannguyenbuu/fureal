@@ -4,6 +4,7 @@ import TransitionComponent from "../components/Transition";
 import AboutPage from "../pages/AboutPage/AboutPage";
 import DevWorkPage from "../pages/DevWorkPage/DevWorkPage";
 import DesignWorkPage from "../pages/DesignWorkPage/DesignWorkPage";
+import EditGLBPage from "../pages/EditGLBPage/EditGLBPage";  // ✅ New page
 import { Route, Routes } from "react-router";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 
@@ -42,6 +43,9 @@ const Router = () => {
           </TransitionComponent>
         }
       />
+      <Route path="edit/:modelGroup/:modelFile" element={<EditGLBPage />} />
+      {/* ✅ Quick preview route */}
+      <Route path="preview/:modelName" element={<EditGLBPage previewOnly />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

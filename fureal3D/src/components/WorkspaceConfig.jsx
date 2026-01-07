@@ -73,20 +73,26 @@ const WorkspaceConfig = () => {
   return (
     <div className="configurator-container">
       {/* 3D Scene */}
-      <div className="car-3d-container">
-        {/* Your 3D scene */}
-      </div>
+      
 
       {/* Top Left: RoomSize */}
       <div className="panel panel-top-left">
         <h3>RoomSize</h3>
-        <Space direction='vertical'>
-          <div style={{marginTop: -40}}>
-            <RoomSizeSliders />
-          </div>
-          <div style={{marginTop: -30}}>
-            <RoomDoorSlider />
-          </div>
+
+        <Space direction="horizontal">
+          <a href="https://www.n-lux.com" target="_blank" rel="noopener noreferrer">
+            <img src={`https://www.n-lux.com/logos/logo-fureal2-1.png`} alt="Fureal Logo" style={{width:100,height:'auto'}}/>
+          </a>
+        
+          <Space direction='vertical'>
+            <div style={{marginTop: -40}}>
+              <RoomSizeSliders />
+            </div>
+            <div style={{marginTop: -30}}>
+              <RoomDoorSlider />
+            </div>
+          </Space>
+
         </Space>
       </div>
 

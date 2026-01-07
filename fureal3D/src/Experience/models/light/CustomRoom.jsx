@@ -11,6 +11,9 @@ import Door from "./Door.jsx";
 import Floor from "./Floor.jsx";
 import Curtain from "./Curtain.jsx";
 
+import lightingConfig from "../../../json/lightingConfig.json";
+
+
 export default function Model({ ...props }) {
   const lightRefs = useRef([]);
   const targetRefs = useRef([]);
@@ -18,6 +21,8 @@ export default function Model({ ...props }) {
     roomWidth, roomLength, roomHeight, roomDoor, setRoomDoor} = usePointer();
     const [doorInfor, setRoomInfor] = useState({x:0,z:0,r:0});
   const subw = 1.28;
+
+  
 
   useEffect(()=>{
       const w = roomWidth - 0.3 * roomWidth/5;
@@ -67,9 +72,15 @@ export default function Model({ ...props }) {
     }
   }, []);
 
-  let positionsY = [-roomWidth / 3, 0, roomWidth / 3];
-  let positionsX = [-roomLength / 3, 0, roomLength / 3];
+  const divX = 3;
+  const divY = 3;
 
+  const positionsX = Array.from({ length: divX }, (_, i) => 
+    (-roomWidth / 2) + (roomWidth * i / (divX - 1))
+  );
+  const positionsY = Array.from({ length: divY }, (_, i) => 
+    (-roomLength / 2) + (roomLength * i / (divY - 1))
+  );
 
   useEffect(() => {
     lightRefs.current.forEach((light, i) => {
@@ -145,13 +156,17 @@ export default function Model({ ...props }) {
             <React.Fragment key={`${x}-${y}`}>
               <spotLight
                 ref={(el) => (lightRefs.current[index] = el)}
-                color={0xffdea6}
-                position={[x, 3, y]}
-                angle={Math.PI / 3}
-                penumbra={0.0001}
-                intensity={5}
+                color={lightingConfig.color}
+                position={[x, lightingConfig.height, y]}
+                angle={Math.PI / lightingConfig.open}
+                penumbra={lightingConfig.penumbra}
+                intensity={lightingConfig.intensity}
                 castShadow
               />
+              {/* <mesh position={[x, lightingConfig.height, y]} receiveShadow>
+                <boxGeometry args={[0.1, 0.1, 0.1]} />
+                <meshStandardMaterial color="gray" opacity={0.5} transparent />
+              </mesh> */}
               <object3D ref={(el) => (targetRefs.current[index] = el)} position={[x, 0, y]} />
             </React.Fragment>
           );

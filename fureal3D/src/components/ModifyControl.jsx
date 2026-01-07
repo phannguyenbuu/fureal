@@ -14,15 +14,15 @@ const btnStyle = { width: 60, height: 60, background:'rgba(255,255,255,0.75)', d
 
 
 function ModifyControls() {
-  const {roomWidth, roomHeight, roomLength, setRoomWidth, setRoomLength, setRoomHeight} = usePointer();
+  // const {roomWidth, roomHeight, roomLength, setRoomWidth, setRoomLength, setRoomHeight} = usePointer();
   const { rotateLeft, rotateRight,getResult, deletePointerId } = usePointer();
   const {setCurrentLibNodeSelection, currentSelection, message,setMessage } = useSelection();
-  const {addedHighlights, setAddedHighlights, saveJson,loadJson} = usePointer();
+  // const {addedHighlights, setAddedHighlights } = usePointer();
   const imgStyle = { width: 30, height: 30 };
 
-  useEffect(()=> {loadJson()},[]);
+  // useEffect(()=> {loadJson()},[]);
   // const [api, contextHolder] = notification.useNotification();
-  const [isRoomStyleVisible, setRoomStyleVisible] = useState(false);
+  // const [isRoomStyleVisible, setRoomStyleVisible] = useState(false);
 
   const rotateCW = () => {
     // setRotationIndex((prev) => (prev + 1) % 4);

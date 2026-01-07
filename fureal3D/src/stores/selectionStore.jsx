@@ -128,40 +128,9 @@ export function PointerProvider({ children }) {
       fetchSaveApi(addedHighlights);
     }
   
-    async function fetchLoadApi(username) {
-      const url = 'https://admake.vn/api/fureal/load';
-      try {
-        const response = await fetch(url, {
-          method: 'POST', 
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ username }) 
-        });
-  
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-  
-        const result = await response.json();
-        // setMessage({message:`Tải dữ liệu thành công`});
-        // console.log('Load API', result);
-
-        setAddedHighlights(result.models);
-        setRoomWidth(result.room.width);
-        setRoomLength(result.room.length);
-        setRoomHeight(result.room.height);
-        setRoomDoor(result.room.door);
-
-        return result;
-      } catch (error) {
-        // setMessage({message:`Tải dữ liệu thất bại`});
-        throw error;
-      }
-    }
   
     const loadJson = () => {
-      fetchLoadApi("Test");
+      // fetchLoadApi("Test");
     }
 
 

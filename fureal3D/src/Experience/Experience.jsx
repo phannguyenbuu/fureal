@@ -4,7 +4,6 @@ import React, { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import Scene from "./Scene";
 import { Canvas } from "@react-three/fiber";
-// import { Html } from '@react-three/drei';
 import { PerspectiveCamera,OrthographicCamera, Box, OrbitControls} from "@react-three/drei";
 import { Environment } from '@react-three/drei';
 
@@ -13,16 +12,7 @@ import { useResponsiveStore } from "../stores/useResponsiveStore";
 import { useExperienceStore } from "../stores/experienceStore";
 import { useThree } from "@react-three/fiber";
 
-// import { Button } from 'antd';
-// import bedroom_furnitures from "../json/bedroom.json";
-// import living_furnitures from "../json/living.json";
-// import RoomDoorSlider from "../components/RoomDoorSlider";
-// import { createPortal } from 'react-dom';
 import ReactDOM from 'react-dom';
-
-import ModifyControls from "../components/ModifyControl";
-
-// import FurnitureModal from "./FunitureModal";
 import WorkspaceConfig from "../components/WorkspaceConfig";
 
 const isMB = () => {
@@ -221,7 +211,7 @@ const Experience = () => {
     <>
     {/* {contextHolder} */}
       <Canvas style={{ position: "fixed", zIndex: 1, top: 0, left: 0 }} shadows gl={{ preserveDrawingBuffer: true }}>
-        <Environment files="/models/NewRoom/512_martigny_square_overcast.hdr" 
+        <Environment preset="city"
           background={false}
           environmentIntensity={1}/>
         
@@ -252,10 +242,10 @@ const Experience = () => {
 
       {/* <NotificationContainer/> */}
 
-      <div style={{ position: 'fixed', left: 20,  top: 200,
+      {/* <div style={{ position: 'fixed', left: 20,  top: 200,
            color: 'black', zIndex:9 }}>
         <ModifyControls setCapture={setCapture}/>
-      </div>
+      </div> */}
 
       <WorkspaceConfig/>
 

@@ -32,18 +32,18 @@
     "gradient": "radial-gradient(circle at 30% 30%, #ff9a9e 0%, #fecfef 50%, #fecfef 100%)"
   },
    {
-    "activeRoom": "chair_sofa",
+    "activeRoom": "chair_sofa_1",
     "path": "Chair_26.json",
     "label": "sofa 1",
-    "shortLabel": "chair_sofa",
+    "shortLabel": "chair_sofa_1",
     "icon": "/images/sofa.svg",
     "gradient": "radial-gradient(circle at 30% 30%, #a8edea 0%, #fed6e3 50%, #ff8a80 100%)"
   },
   {
-    "activeRoom": "chair_sofa",
+    "activeRoom": "chair_sofa_2",
     "path": "Chair_29.json",
     "label": "sofa 2",
-    "shortLabel": "chair_sofa",
+    "shortLabel": "chair_sofa_2",
     "icon": "/images/sofa.svg",
     "gradient": "radial-gradient(circle at 30% 30%, #a8edea 0%, #fed6e3 50%, #ff8a80 100%)"
   },
@@ -59,7 +59,7 @@
     "activeRoom": "table_1",
     "path": "Table_09.json",
     "label": "table 1",
-    "shortLabel": "LIVING",
+    "shortLabel": "table_1",
     "icon": "/images/sofa.svg",
     "gradient": "radial-gradient(circle at 30% 30%, #a8edea 0%, #fed6e3 50%, #ff8a80 100%)"
   },
