@@ -31,6 +31,12 @@ server {
         root /var/www/n-lux.com/html;
         allow all;
     }
+    
+    location /api/ {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
 
     location /admin/ {
         proxy_pass http://31.97.76.62:5000/;  # ✅ Dùng IP public thay 127.0.0.1
@@ -88,5 +94,4 @@ server {
     location /images/ { alias /var/www/creative/images/; }
     location /preview/ { alias /var/www/creative/preview/; }
     
-   
 }

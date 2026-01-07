@@ -60,6 +60,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Preview</th>
                         <th>Type</th>
                         <th>Name</th>
                         <th>Cost</th>
@@ -129,6 +130,11 @@ function renderTable() {
         tbody.innerHTML += `
         <tr>
             <td>${i}</td>
+            <td>
+                ${item.preview ? `<img src="https://www.n-lux.com/creative${item.preview}" alt="${item.name}" 
+                    style="width:50px; height:50px; object-fit:cover; border-radius:4px;"
+                    onclick="window.open('https://www.n-lux.com/creative${item.preview}', '_blank')">` : ''}
+            </td>
             <td><input class="form-control" value="${item.type || ''}"
                 onchange="update(${i}, 'type', this.value)"></td>
             <td><input class="form-control" value="${item.name || ''}"
@@ -240,7 +246,8 @@ function delRow(i) {
 }
 
 window.onload = () => {
-    const room = location.pathname.replace("/", "")
+    const room = location.pathname.replace(/^\/creative\//, "")
+
     if (!room) return
 
     const map = {{ model_library | tojson }}
