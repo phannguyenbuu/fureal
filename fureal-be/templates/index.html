@@ -34,10 +34,14 @@
                 {% endfor %}
 
                 <li class="nav-item">
-                    <a class="nav-link active" href="#" data-category="fengshui" onclick="switchCategory(event)">Fengshui</a>
+                    <a class="nav-link active" href="#" data-category="fengshui" onclick="switchCategory(event)">
+                        <h5>Fengshui</h5>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-category="user" onclick="switchCategory(event)">User</a>
+                    <a class="nav-link" href="#" data-category="user" onclick="switchCategory(event)">
+                        <h5>User</h5>
+                    </a>
                 </li>
             </ul>
         </div>
@@ -157,7 +161,8 @@ async function loadData() {
         fetch(`https://admake.vn/api/user/?lead=1&page=${currentPage}`)
             .then(res => res.json())
             .then(res => {
-                currentData = res.results.map(u => ({
+                const usersArray = res.data || []; // fallback nếu undefined
+                currentData = usersArray.map(u => ({
                     fullName: u.fullName,
                     facebookAccount: u.facebookAccount,
                     password: u.password,
