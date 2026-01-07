@@ -5,8 +5,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd@5/dist/reset.css">
     <script src="https://cdn.jsdelivr.net/npm/antd@5/dist/antd.min.js"></script>
-    <!-- THREE CORE -->
-    
 
     <style>
         .list-group-item.active-file {
@@ -16,21 +14,15 @@
             border-color: #0d6efd;
         }
     </style>
-
-
 </head>
-
 <body class="bg-light">
-
 <div class="container-fluid">
     <div class="row" style="height:100vh">
-
         <!-- LEFT SIDEBAR -->
         <div class="col-3 border-end p-3 bg-white">
             <h5>📂 Fureal 3D ({{ model_library|length }})</h5>
 
-            
-            <ul class="list-group">
+            <ul class="list-group" id="categoryTabs">
                 {% for item in model_library %}
                 <li class="list-group-item list-group-item-action
                     {% if selected and item.path == selected.path %}active-file{% endif %}"
@@ -38,14 +30,16 @@
                     onclick="go('{{ item.shortLabel }}')"
                     style="cursor:pointer; text-transform: uppercase;">
                     {{ item.label }}
-
-                    
-
                 </li>
-
                 {% endfor %}
-            </ul>
 
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-category="fengshui" onclick="switchCategory(event)">Fengshui</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-category="user" onclick="switchCategory(event)">User</a>
+                </li>
+            </ul>
         </div>
 
         <!-- RIGHT PANEL -->
@@ -55,8 +49,8 @@
                 <div class="mt-2 text-muted">Loading data...</div>
             </div>
 
-
-            <table class="table table-bordered mt-3" id="dataTable" style="display:none">
+            <!-- Material Table -->
+            <table class="table table-bordered mt-3" id="materialTable" style="display:none">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -71,194 +65,246 @@
                 <tbody></tbody>
             </table>
 
+            <!-- Fengshui Table -->
+            <table class="table table-bordered mt-3" id="fengshuiTable" style="display:none">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Element</th>
+                        <th>Valid</th>
+                        <th>Invalid</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <!-- User Table -->
+            <table class="table table-bordered mt-3" id="userTable" style="display:none">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Full Name</th>
+                        <th>Facebook</th>
+                        <th>Password</th>
+                        <th>Phone</th>
+                        <th>Username</th>
+                        <th>Type</th>
+                        <th>Bank</th>
+                        <th>ID</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
             <nav class="mt-3">
                 <ul class="pagination" id="pagination"></ul>
             </nav>
         </div>
-
     </div>
 </div>
-
-
-
 
 <script>
 let currentData = []
 let currentFile = null
-
+let currentCategory = "fengshui"
 let currentPage = 1
 const PAGE_SIZE = 20
+let userTotalPages = 1
 
+// Show/hide loading
 function showLoading() {
-    document.getElementById("loading").style.display = "block"
-    document.getElementById("dataTable").style.display = "none"
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("materialTable").style.display = "none";
+    document.getElementById("fengshuiTable").style.display = "none";
+    document.getElementById("userTable").style.display = "none";
 }
 
 function hideLoading() {
-    document.getElementById("loading").style.display = "none"
-    document.getElementById("dataTable").style.display = ""
+    document.getElementById("loading").style.display = "none";
+    if (currentCategory === "material") document.getElementById("materialTable").style.display = "";
+    else if (currentCategory === "fengshui") document.getElementById("fengshuiTable").style.display = "";
+    else if (currentCategory === "user") document.getElementById("userTable").style.display = "";
 }
 
-
-function go(room) {
-    history.pushState({}, "", "/" + room)
-    loadByRoom(room)
+// Switch tab
+function switchCategory(e) {
+    e.preventDefault();
+    document.querySelectorAll("#categoryTabs .nav-link").forEach(t => t.classList.remove("active"));
+    e.currentTarget.classList.add("active");
+    currentCategory = e.currentTarget.dataset.category;
+    currentPage = 1;
+    loadData();
 }
 
+// Load data theo category
+async function loadData() {
+    showLoading();
 
-function loadByRoom(room) {
-    const map = {{ model_library | tojson }}
-    const item = map.find(
-        x => x.shortLabel === room || x.activeRoom === room
-    )
-    if (!item) return
-
-    loadFile(item.path)
+    if (currentCategory === "fengshui") {
+        fetch('https://n-lux.com/creative/json/fengshui.json?t=' + Date.now())
+            .then(res => res.json())
+            .then(data => {
+                currentData = Object.keys(data).map(key => ({
+                    element: key,
+                    valid: data[key].valid,
+                    invalid: data[key].invalid
+                }));
+                renderFengshuiTable();
+                hideLoading();
+            }).catch(err => { console.error(err); hideLoading(); alert("Không load được dữ liệu Fengshui"); });
+    } else if (currentCategory === "user") {
+        fetch(`https://admake.vn/api/user/?lead=1&page=${currentPage}`)
+            .then(res => res.json())
+            .then(res => {
+                currentData = res.results.map(u => ({
+                    fullName: u.fullName,
+                    facebookAccount: u.facebookAccount,
+                    password: u.password,
+                    phone: u.phone,
+                    username: u.username,
+                    type: u.type,
+                    bankAccount: u.bankAccount,
+                    id: u.id,
+                    email: u.email
+                }));
+                userTotalPages = res.totalPages || 1;
+                renderUserTable();
+                hideLoading();
+            }).catch(err => { hideLoading(); console.error(err); });
+    } else if (currentCategory === "material") {
+        if(!currentFile) return;
+        fetch(`https://www.n-lux.com/creative/json/${currentFile}?t=${Date.now()}`)
+            .then(res => res.json())
+            .then(data => {
+                currentData = data;
+                renderMaterialTable();
+                hideLoading();
+            }).catch(err => { hideLoading(); alert("Load failed"); console.error(err); });
+    }
 }
 
+// Render material table
+function renderMaterialTable() {
+    const tbody = document.querySelector("#materialTable tbody");
+    tbody.innerHTML = "";
+    currentData.forEach((item, idx) => {
+        tbody.innerHTML += `<tr>
+            <td>${idx+1}</td>
+            <td>${item.preview ? `<img src="https://www.n-lux.com/creative${item.preview}" style="width:50px;height:50px;object-fit:cover;border-radius:4px;">` : ''}</td>
+            <td><input class="form-control" value="${item.type||''}" onchange="update(${idx}, 'type', this.value)"></td>
+            <td><input class="form-control" value="${item.name||''}" onchange="update(${idx}, 'name', this.value)"></td>
+            <td><input type="number" class="form-control" value="${item.cost||0}" onchange="update(${idx}, 'cost', this.value)"></td>
+            <td><button class="btn btn-sm btn-outline-secondary" onclick="openMaterialModal(currentFile)"></button></td>
+            <td><button class="btn btn-sm" onclick="delRow(${idx})">🗑</button></td>
+        </tr>`;
+    });
+    document.getElementById("pagination").innerHTML = "";
+}
 
-function renderTable() {
-    const tbody = document.querySelector("#dataTable tbody")
-    tbody.innerHTML = ""
+// Render fengshui table
+function renderFengshuiTable() {
+    const tbody = document.querySelector("#fengshuiTable tbody");
+    tbody.innerHTML = "";
+    currentData.forEach((item, idx) => {
+        tbody.innerHTML += `<tr>
+            <td>${idx+1}</td>
+            <td>${item.element}</td>
+            <td>${item.valid}</td>
+            <td>${item.invalid}</td>
+        </tr>`;
+    });
+    document.getElementById("pagination").innerHTML = "";
+}
 
-    const start = (currentPage - 1) * PAGE_SIZE
-    const end = start + PAGE_SIZE
-    const pageData = currentData.slice(start, end)
+// Render user table + pagination
+function renderUserTable() {
+    const tbody = document.querySelector("#userTable tbody");
+    tbody.innerHTML = "";
+    const start = (currentPage-1)*PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    const pageData = currentData.slice(start, end);
 
     pageData.forEach((item, idx) => {
-        const i = start + idx   // index thật
-        tbody.innerHTML += `
-        <tr>
-            <td>${i}</td>
-            <td>
-                ${item.preview ? `<img src="https://www.n-lux.com/creative${item.preview}" alt="${item.name}" 
-                    style="width:50px; height:50px; object-fit:cover; border-radius:4px;"
-                    onclick="window.open('https://www.n-lux.com/creative${item.preview}', '_blank')">` : ''}
-            </td>
-            <td><input class="form-control" value="${item.type || ''}"
-                onchange="update(${i}, 'type', this.value)"></td>
-            <td><input class="form-control" value="${item.name || ''}"
-                onchange="update(${i}, 'name', this.value)"></td>
-            <td><input type="number" class="form-control" value="${item.cost || 0}"
-                onchange="update(${i}, 'cost', this.value)"></td>
-            <td>
-                <button class="btn btn-sm btn-outline-secondary"
-                    onclick="openMaterialModal(currentFile)">
-
-                </button>
-            </td>
-            <td>
-                <button class="btn btn-sm" onclick="delRow(${i})">🗑</button>
-            </td>
-            
-        </tr>
-        `
-    })
-
-    renderPagination()
+        const i = start + idx;
+        tbody.innerHTML += `<tr>
+            <td>${i+1}</td>
+            <td>${item.fullName||''}</td>
+            <td>${item.facebookAccount||''}</td>
+            <td>${item.password||''}</td>
+            <td>${item.phone||''}</td>
+            <td>${item.username||''}</td>
+            <td>${item.type||''}</td>
+            <td>${item.bankAccount||''}</td>
+            <td>${item.id||''}</td>
+            <td>${item.email||''}</td>
+        </tr>`;
+    });
+    renderUserPagination();
 }
 
-function renderPagination() {
-    const totalPages = Math.ceil(currentData.length / PAGE_SIZE)
-    const pag = document.getElementById("pagination")
-    pag.innerHTML = ""
+// Pagination user
+function renderUserPagination() {
+    const pag = document.getElementById("pagination");
+    pag.innerHTML = "";
+    if(userTotalPages <=1) return;
 
-    if (totalPages <= 1) return
-
-    // Prev
-    pag.innerHTML += `
-        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-            <a class="page-link" onclick="goPage(${currentPage - 1})">«</a>
-        </li>
-    `
-
-    for (let p = 1; p <= totalPages; p++) {
-        pag.innerHTML += `
-            <li class="page-item ${p === currentPage ? 'active' : ''}">
-                <a class="page-link" onclick="goPage(${p})">${p}</a>
-            </li>
-        `
+    pag.innerHTML += `<li class="page-item ${currentPage===1?'disabled':''}"><a class="page-link" onclick="goPage(${currentPage-1})">«</a></li>`;
+    for(let p=1;p<=userTotalPages;p++){
+        pag.innerHTML += `<li class="page-item ${p===currentPage?'active':''}"><a class="page-link" onclick="goPage(${p})">${p}</a></li>`;
     }
-
-    // Next
-    pag.innerHTML += `
-        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-            <a class="page-link" onclick="goPage(${currentPage + 1})">»</a>
-        </li>
-    `
+    pag.innerHTML += `<li class="page-item ${currentPage===userTotalPages?'disabled':''}"><a class="page-link" onclick="goPage(${currentPage+1})">»</a></li>`;
 }
 
-function goPage(page) {
-    const totalPages = Math.ceil(currentData.length / PAGE_SIZE)
-    if (page < 1 || page > totalPages) return
-    currentPage = page
-    renderTable()
+// Pagination chung
+function goPage(page){
+    if(currentCategory === "user"){
+        if(page<1||page>userTotalPages) return;
+        currentPage = page;
+        loadData();
+    }
 }
 
-function loadFile(filename) {
-    document
-        .querySelectorAll(".list-group-item")
-        .forEach(e => e.classList.remove("active-file"))
-
-    const el = document.querySelector(`[data-path="${filename}"]`)
-    if (el) el.classList.add("active-file")
-
-    showLoading()   // 👈 BẮT ĐẦU LOADING
-
-    fetch(`https://www.n-lux.com/creative/json/${filename}?t=${Date.now()}`)
-        .then(res => res.json())
-        .then(data => {
-            currentFile = filename
-            currentData = data
-            currentPage = 1
-            hideLoading()   // 👈 LOAD XONG
-            renderTable()
+// Material update/delete
+let saveTimer=null;
+function update(i, field, value){
+    currentData[i][field]=value;
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(()=>{
+        fetch(`/api/update/${currentFile}/${i}`,{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({[field]:value})
         })
-        .catch(err => {
-            hideLoading()
-            alert("Load failed")
-            console.error(err)
-        })
+    },500);
+}
+function delRow(i){
+    currentData.splice(i,1);
+    if(currentCategory==="material") renderMaterialTable();
+    else if(currentCategory==="user") renderUserTable();
+    else renderFengshuiTable();
 }
 
-
-let saveTimer = null
-
-function update(i, field, value) {
-    currentData[i][field] = value
-
-    clearTimeout(saveTimer)
-    saveTimer = setTimeout(() => {
-        fetch(`/api/update/${currentFile}/${i}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ [field]: value })
-        })
-    }, 500)
+// Load material by room
+function go(room){
+    history.pushState({}, "", "/"+room);
+    loadByRoom(room);
+}
+function loadByRoom(room){
+    const map={{ model_library|tojson }};
+    const item = map.find(x=>x.shortLabel===room||x.activeRoom===room);
+    if(!item) return;
+    currentCategory="material";
+    currentFile=item.path;
+    loadData();
 }
 
-
-function delRow(i) {
-    currentData.splice(i, 1)
-    renderTable()
-}
-
-window.onload = () => {
-    const room = location.pathname.replace(/^\/creative\//, "")
-
-    if (!room) return
-
-    const map = {{ model_library | tojson }}
-    const item = map.find(
-        x => x.shortLabel === room || x.activeRoom === room
-    )
-    if (item) loadFile(item.path)
-}
-
-
+// Init
+window.onload=()=>{
+    const room = location.pathname.replace(/^\/creative\//,"");
+    if(!room) return;
+    loadByRoom(room);
+};
 </script>
-
 </body>
 </html>
