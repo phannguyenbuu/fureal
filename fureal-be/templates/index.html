@@ -13,6 +13,9 @@
             font-weight: 600;
             border-color: #0d6efd;
         }
+
+        input.form-control { font-size: 0.875rem; }
+        .editable { cursor: pointer; background: #f8f9fa; }
     </style>
 </head>
 <body class="bg-light">
@@ -212,40 +215,87 @@ function renderFengshuiTable() {
     const tbody = document.querySelector("#fengshuiTable tbody");
     tbody.innerHTML = "";
     currentData.forEach((item, idx) => {
-        tbody.innerHTML += `<tr>
-            <td>${idx+1}</td>
-            <td>${item.element}</td>
-            <td>${item.valid}</td>
-            <td>${item.invalid}</td>
+        tbody.innerHTML += `
+            <tr>
+                <td>${idx+1}</td>
+                <td contenteditable="true" class="editable" ondblclick="makeEditable(this)" 
+                    onchange="updateFengshui('${item.element}', 'element', this.innerText)">${item.element}</td>
+                <td><textarea class="form-control" rows="2" onchange="updateFengshui('${item.element}', 'valid', this.value)">${Array.isArray(item.valid) ? item.valid.join(', ') : item.valid}</textarea></td>
+                <td><textarea class="form-control" rows="2" onchange="updateFengshui('${item.element}', 'invalid', this.value)">${Array.isArray(item.invalid) ? item.invalid.join(', ') : item.invalid}</textarea></td>
+                <td><button class="btn btn-sm btn-danger" onclick="deleteFengshui('${item.element}')">🗑</button></td>
         </tr>`;
     });
     document.getElementById("pagination").innerHTML = "";
 }
 
-// Render user table + pagination
+// Fengshui Update
+async function updateFengshui(element, field, value) {
+    const index = currentData.findIndex(item => item.element === element);
+    if (index !== -1) currentData[index][field] = value.split(',').map(s => s.trim()).filter(Boolean);
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+        fetch(`/api/fengshui/${element}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({[field]: value.split(',').map(s => s.trim())})
+        }).then(res => res.json()).catch(console.error);
+    }, 500);
+}
+
+
+// Fengshui Delete
+async function deleteFengshui(element) {
+    if (confirm(`Delete ${element}?`)) {
+        await fetch(`/api/fengshui/${element}`, {method: 'DELETE'});
+        currentData = currentData.filter(item => item.element !== element);
+        renderFengshuiTable();
+    }
+}
+
+
+// User Render - Full Editable
 function renderUserTable() {
     const tbody = document.querySelector("#userTable tbody");
     tbody.innerHTML = "";
-    const start = (currentPage-1)*PAGE_SIZE;
-    const end = start + PAGE_SIZE;
-    const pageData = currentData.slice(start, end);
-
-    pageData.forEach((item, idx) => {
-        const i = start + idx;
-        tbody.innerHTML += `<tr>
-            <td>${i+1}</td>
-            <td>${item.fullName||''}</td>
-            <td>${item.facebookAccount||''}</td>
-            <td>${item.password||''}</td>
-            <td>${item.phone||''}</td>
-            <td>${item.username||''}</td>
-            <td>${item.type||''}</td>
-            <td>${item.bankAccount||''}</td>
-            <td>${item.id||''}</td>
-            <td>${item.email||''}</td>
-        </tr>`;
+    currentData.forEach((item, idx) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${(currentPage-1)*PAGE_SIZE + idx + 1}</td>
+                <td><input class="form-control" value="${item.fullName||''}" onchange="updateUser(${item.id}, 'fullName', this.value)"></td>
+                <td><input class="form-control" value="${item.facebookAccount||''}" onchange="updateUser(${item.id}, 'facebookAccount', this.value)"></td>
+                <td><input type="password" class="form-control" value="${item.password||''}" onchange="updateUser(${item.id}, 'password', this.value)"></td>
+                <td><input class="form-control" value="${item.phone||''}" onchange="updateUser(${item.id}, 'phone', this.value)"></td>
+                <td><input class="form-control" value="${item.username||''}" onchange="updateUser(${item.id}, 'username', this.value)"></td>
+                <td><input class="form-control" value="${item.type||''}" onchange="updateUser(${item.id}, 'type', this.value)"></td>
+                <td><input class="form-control" value="${item.bankAccount||''}" onchange="updateUser(${item.id}, 'bankAccount', this.value)"></td>
+                <td>${item.id}</td>
+                <td><input class="form-control" value="${item.email||''}" onchange="updateUser(${item.id}, 'email', this.value)"></td>
+                <td><button class="btn btn-sm btn-danger" onclick="deleteUser(${item.id})">🗑</button></td>
+            </tr>`;
     });
     renderUserPagination();
+}
+
+// User Update (local cache + proxy)
+async function updateUser(userId, field, value) {
+    const index = currentData.findIndex(u => u.id == userId);
+    if (index !== -1) currentData[index][field] = value;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+        fetch(`/api/user/${userId}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({[field]: value})
+        }).then(res => res.json()).catch(console.error);
+    }, 500);
+}
+
+async function deleteUser(userId) {
+    if (confirm('Delete user?')) {
+        await fetch(`/api/user/${userId}`, {method: 'DELETE'});
+        currentData = currentData.filter(u => u.id != userId);
+        renderUserTable();
+    }
 }
 
 // Pagination user

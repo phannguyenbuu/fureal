@@ -6,7 +6,7 @@ import Scene from "./Scene";
 import { Canvas } from "@react-three/fiber";
 import { PerspectiveCamera,OrthographicCamera, Box, OrbitControls} from "@react-three/drei";
 import { Environment } from '@react-three/drei';
-
+import ModifyControls from "../components/ModifyControl";
 import { useToggleRoomStore } from "../stores/toggleRoomStore";
 import { useResponsiveStore } from "../stores/useResponsiveStore";
 import { useExperienceStore } from "../stores/experienceStore";
@@ -242,10 +242,10 @@ const Experience = () => {
 
       {/* <NotificationContainer/> */}
 
-      {/* <div style={{ position: 'fixed', left: 20,  top: 200,
+      <div style={{ position: 'fixed', left: 20,  top: 200,
            color: 'black', zIndex:9 }}>
         <ModifyControls setCapture={setCapture}/>
-      </div> */}
+      </div>
 
       <WorkspaceConfig/>
 

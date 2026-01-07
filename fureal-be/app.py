@@ -12,6 +12,70 @@ app = Flask(__name__)
 app.secret_key = 'your-secret-key'  # Change this!
 CORS(app)
 
+from flask import jsonify  # Đã có
+
+FENGSHUI_PATH = os.path.join(JSON_DIR, 'fengshui.json')
+
+@app.route('/api/fengshui', methods=['GET'])
+def get_fengshui():
+    try:
+        if os.path.exists(FENGSHUI_PATH):
+            with open(FENGSHUI_PATH, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        else:
+            data = {}  # Default empty dict {element: {valid: [], invalid: []}}
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/fengshui/<element>', methods=['PUT'])  # Update element
+def update_fengshui_element(element):
+    try:
+        payload = request.get_json()
+        if not os.path.exists(FENGSHUI_PATH):
+            return jsonify({'error': 'File not found'}), 404
+        with open(FENGSHUI_PATH, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        data[element] = {'valid': payload.get('valid', []), 'invalid': payload.get('invalid', [])}
+        shutil.copy(FENGSHUI_PATH, FENGSHUI_PATH + '.bak')
+        with open(FENGSHUI_PATH, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        return jsonify({'ok': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/fengshui/<element>', methods=['DELETE'])
+def delete_fengshui_element(element):
+    try:
+        if not os.path.exists(FENGSHUI_PATH):
+            return jsonify({'error': 'File not found'}), 404
+        with open(FENGSHUI_PATH, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        data.pop(element, None)
+        shutil.copy(FENGSHUI_PATH, FENGSHUI_PATH + '.bak')
+        with open(FENGSHUI_PATH, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        return jsonify({'ok': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/fengshui', methods=['POST'])  # Add new element
+def add_fengshui_element():
+    try:
+        element = request.json.get('element')
+        payload = request.json.get('data', {})
+        if not os.path.exists(FENGSHUI_PATH):
+            data = {}
+        else:
+            with open(FENGSHUI_PATH, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        data[element] = {'valid': payload.get('valid', []), 'invalid': payload.get('invalid', [])}
+        shutil.copy(FENGSHUI_PATH, FENGSHUI_PATH + '.bak')
+        with open(FENGSHUI_PATH, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        return jsonify({'ok': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route("/", defaults={"room": None})
@@ -98,20 +162,6 @@ def delete_item(filename, index):
         flash('Item deleted!', 'success')
     return redirect(url_for('view_file', filename=filename))
 
-
-@app.route("/api/json/save/<filename>", methods=["POST"])
-def save_json(filename):
-    data = request.get_json()
-    path = os.path.join(BASE_PATH, filename)
-
-    if not path.startswith(BASE_PATH):
-        return {"error": "invalid path"}, 400
-
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-
-    return {"status": "ok"}
-
 @app.route("/api/update/<path:filename>/<int:index>", methods=["POST"])
 def api_update(filename, index):
     path = os.path.join(JSON_DIR, filename)
@@ -188,5 +238,70 @@ def create_file():
         flash('File created!', 'success')
     return redirect(url_for('index'))
 
+
+
+# USER
+
+USERS_PATH = os.path.join(JSON_DIR, 'users.json')
+
+@app.route('/api/user', methods=['GET'])
+def get_users():
+    page = request.args.get('page', 1, type=int)
+    lead = request.args.get('lead', 1)
+    try:
+        # Proxy external API
+        import requests
+        resp = requests.get(f'https://admake.vn/api/user/?lead={lead}&page={page}')
+        data = resp.json() if resp.ok else {'data': [], 'totalPages': 1}
+        
+        # Cache local nếu edit mode
+        if os.path.exists(USERS_PATH):
+            with open(USERS_PATH, 'r') as f:
+                cached = json.load(f)
+            data['cached'] = cached
+        return jsonify(data)
+    except:
+        # Fallback local
+        if os.path.exists(USERS_PATH):
+            with open(USERS_PATH, 'r') as f:
+                data = json.load(f)
+            return jsonify({'data': data.get('data', []), 'totalPages': data.get('totalPages', 1)})
+        return jsonify({'data': [], 'totalPages': 1})
+
+@app.route('/api/user/<int:user_id>', methods=['PUT'])  # Update user
+def update_user(user_id):
+    try:
+        payload = request.get_json()
+        if not os.path.exists(USERS_PATH):
+            return jsonify({'error': 'No local cache'}), 404
+        with open(USERS_PATH, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        for user in data.get('data', []):
+            if user.get('id') == user_id:
+                user.update(payload)
+                break
+        shutil.copy(USERS_PATH, USERS_PATH + '.bak')
+        with open(USERS_PATH, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        return jsonify({'ok': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/user', methods=['POST'])  # Add user
+@app.route('/api/user/<int:user_id>', methods=['DELETE'])  # Delete
+def crud_user(user_id=None):
+    # Tương tự update, implement add/delete với local cache
+    # Sync với external nếu cần POST to admake.vn
+    pass  # Extend tương tự fengshui
+
+
+
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
+
+
+
